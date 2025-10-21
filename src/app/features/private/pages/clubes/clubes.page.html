@@ -1,0 +1,279 @@
+<h2 class="fw-bold mt-4" style="color: #1b263b">Gestión de Clubes</h2>
+<div class="row">
+  <div class="col">
+    <p style="color: rgb(79, 81, 83)">
+      Administra los clubes de conquistadores registrados en el sistema
+    </p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-sm-6 mt-3">
+    <div class="search-container">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="
+Buscar por nombre, zona o director...
+"
+      />
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 mt-3 text-end">
+    <button
+      class="btn-club"
+      data-bs-toggle="modal"
+      data-bs-target="#staticBackdrop"
+    >
+      <i class="bi bi-plus"></i> Agregar Club
+    </button>
+  </div>
+</div>
+<div class="row mt-4">
+  <div class="col-12 mb-4 col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="mb-4" style="font-size: 1.2rem">Aguilas Doradas</h5>
+        <div class="row mb-2">
+          <div class="col">
+            <i class="bi bi-people me-2"></i>
+            <span style="color: rgb(80, 80, 80)">
+              <strong style="margin-right: 4px">45</strong>
+              <small
+                class="ml-2"
+                style="
+                  color: rgb(80, 80, 80);
+                  font-weight: 400;
+                  font-size: medium;
+                "
+                >Miembros</small
+              >
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <i class="bi bi-person me-2"></i>
+            <span
+              style="
+                color: rgb(80, 80, 80);
+                font-weight: 400;
+                font-size: medium;
+              "
+              >Director: Jhon Doe</span
+            >
+          </div>
+          <div class="row mt-4">
+            <div class="col">
+              <button
+                class="btn-editar"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+              >
+                Editar
+              </button>
+              <button
+                class="btn-delete btn-sm ms-2"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div class="w-100">
+          <h6 class="modal-title fs-5 mb-0" id="staticBackdropLabel">
+            Editar Club
+          </h6>
+          <span class="d-block text-muted small mt-1"
+            >Actualiza la información del club</span
+          >
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="clubName" class="form-label">Nombre del Club</label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: Central Cambita"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="clubName" class="form-label">Nombre del Club</label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: zona 10"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="director" class="form-label">
+              Cantidad de Miembros
+            </label>
+            <input
+              type="number"
+              class="form-control-control"
+              placeholder="Ej: 25"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="director" class="form-label">
+              Nombre del Director
+            </label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: Juan Pérez"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-editar" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn-actualizar">Actualizar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">
+          ¿Estás seguro que deseas eliminar este club?
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Esta acción no se puede deshacer. Se eliminará permanentemente el club
+        "Águilas Doradas" y todas sus evaluaciones asociadas.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-editar" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn-eliminar">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div class="w-100">
+          <h6 class="modal-title fs-5 mb-0" id="staticBackdropLabel">
+            Agregar Nuevo Club
+          </h6>
+          <span class="d-block text-muted small mt-1"
+            >Actualiza la información del club</span
+          >
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="clubName" class="form-label">Nombre del Club</label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: Central Cambita"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="clubName" class="form-label">Nombre del Club</label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: zona 10"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="director" class="form-label">
+              Cantidad de Miembros
+            </label>
+            <input
+              type="number"
+              class="form-control-control"
+              placeholder="Ej: 25"
+              min="0"
+              max="100"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="director" class="form-label">
+              Nombre del Director
+            </label>
+            <input
+              type="text"
+              class="form-control-control"
+              placeholder="Ej: Juan Pérez"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-editar" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn-actualizar">Actualizar</button>
+      </div>
+    </div>
+  </div>
+</div>

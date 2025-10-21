@@ -1,0 +1,191 @@
+.dashboard-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: none;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #1b263b;
+  }
+
+  .card-text {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .icon-container {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background-color: #ebeef1d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 1.09rem;
+      color: #323946;
+    }
+  }
+}
+
+.custom-card-club {
+  height: auto;
+  width: 100%;
+  border: 1px solid rgba(121, 118, 118, 0.196);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+
+  .number-avatar {
+    height: 35px;
+    width: 40px;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.05rem;
+    font-weight: bold;
+    margin-right: 20px;
+  }
+
+  .f0b100 {
+    background-color: #f0b100;
+  }
+
+  .c99a1af {
+    background-color: #99a1af;
+  }
+
+  .bb4d00 {
+    background-color: #bb4d00;
+  }
+
+  .c415a77 {
+    background-color: #415a77;
+  }
+
+  .club-info {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    .club-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1b263b;
+    }
+
+    .club-evaluation {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  }
+
+  .club-percent {
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-end;
+    justify-content: center;
+
+    .percent {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #1b263b;
+    }
+
+    .percent-label {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+  }
+}
+
+.custom-card-evaluation {
+  height: auto;
+  width: 100%;
+  border: 1px solid rgba(121, 118, 118, 0.196);
+  border-radius: 8px;
+  padding: 8px 16px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .evaluation-name {
+    //este es el 2
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #090909;
+  }
+
+  .evaluation-percent {
+    //este es el 3
+    height: 100%;
+    display: flex;
+    flex-flow: row; //
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .alert {
+    font-size: 0.8rem;
+    font-weight: bold;
+
+    border-radius: 20px;
+  }
+}
+
+.btn-outline {
+  width: 100%; /* Ocupa todo el ancho */
+  display: block; /* Se comporta como bloque */
+  color: rgb(12, 12, 12); /* Texto en blanco */
+  border: 1px solid #4e505348; /* con borde */
+  padding: 8px 20px; /* Espaciado interno */
+  font-weight: 500;
+  font-size: 16px; /* Tamaño del texto */
+  border-radius: 6px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor a "mano" */
+}
+
+.btn-outline:hover {
+  background-color: #465a75; /* Versión del azul al pasar el cursor */
+}
+
+.Resumen {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1b263b;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1e2f50;
+}

@@ -1,0 +1,139 @@
+.form-control {
+  height: 35px;
+  width: 80%;
+  border-radius: 9px;
+  border: 1px solid #b9c5d0;
+  background-color: #e0e1de;
+  font-size: 15px;
+
+  &::placeholder {
+    color: #556371; /* color del texto del placeholder */
+    font-size: 14px; /* tamaño del texto */
+    font-weight: 500;
+  }
+}
+
+.btn-club {
+  height: 35px;
+  width: 30%;
+  border-radius: 9px;
+  background-color: #1b263b;
+  font-size: 14px;
+  font-weight: 500;
+  color: #e3e6eb;
+}
+
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-container::before {
+  content: "\f52a"; /* código unicode del ícono bi-search */
+  font-family: "bootstrap-icons";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.search-container input {
+  padding-left: 35px; /* espacio para el ícono */
+}
+
+.btn-editar {
+  height: 35px;
+  width: 25%;
+  border-radius: 9px;
+  border: 1px solid #e0e1dd;
+  background-color: #e0e1ddd6;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b4a4a;
+
+  &:hover {
+    background-color: #58678db4;
+  }
+}
+
+.btn-delete {
+  height: 35px;
+  width: 14%;
+  border-radius: 9px;
+  border: 1px solid #e0e1dd;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0c0c0c;
+
+  &:hover {
+    background-color: #c061615b;
+  }
+  i {
+    color: #a80b0b;
+    font-size: 16px;
+  }
+}
+
+.modal-title {
+  font-weight: 500;
+}
+
+.modal-header span {
+  display: block !important;
+  color: #36526e !important;
+  font-size: 15px !important;
+  font-weight: 400;
+  margin-top: 2px !important;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+}
+.form-control-control {
+  height: 35px;
+  width: 100%;
+  border-radius: 9px;
+  border: 1px solid #c3bcbc;
+  background-color: #ffffff;
+  font-size: 15px;
+  padding-left: 10px;
+
+  &::placeholder {
+    color: #36526e; /* color del texto del placeholder */
+    font-size: 14px; /* tamaño del texto */
+    font-weight: 500;
+  }
+}
+
+.btn-actualizar {
+  height: 35px;
+  width: 25%;
+  border-radius: 9px;
+  border: 1px solid #e0e1dd;
+  background-color: #1b263b;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.modal-body {
+  font-size: 15px;
+  font-weight: 500;
+  color: #36526e;
+}
+.btn-eliminar {
+  height: 35px;
+  width: 25%;
+  border-radius: 9px;
+  border: 1px solid #e0e1dd;
+  background-color: #a80b0b;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+}

@@ -1,0 +1,138 @@
+.app-content {
+  background-color: #e0e1de;
+  height: 100vh;
+  width: 100vw;
+  padding: 0px;
+  margin: 0px;
+  overflow-y: auto;
+}
+
+.navbar {
+  background-color: #e0e1de;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+
+  .nav-link {
+    color: #1b263b;
+    margin-right: 8px;
+
+    &:hover {
+      color: white;
+      background-color: #465a7594;
+      border-radius: 6px;
+    }
+
+    &.active {
+      color: white;
+      background-color: #465a75;
+      border-radius: 8px;
+      padding: 4px 12px !important;
+    }
+  }
+}
+
+.logo-container {
+  width: 34px;
+  height: 34px;
+  margin-right: 8px;
+  border-radius: 6px;
+  background-color: #1d263a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-brand {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+  color: #1b263b;
+}
+
+.btn {
+  width: 100%;
+  height: 35px;
+  border: none;
+  display: flex; /* Activa flexbox */
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  color: #fff;
+  background-color: #0f1c2d;
+  padding: 8px 10px;
+  font-weight: 500;
+  font-size: 16px;
+  border-radius: 20px;
+}
+
+.btn-outline:hover {
+  background-color: #465a75; /* Versión del azul al pasar el cursor */
+}
+
+/* Avatar botón (A) y menú desplegable */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.avatar-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #1d263a;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.user-dropdown-card {
+  position: absolute;
+  top: 52px; /* justo debajo del avatar */
+  right: 0;
+  width: 280px;
+  background: #ffffff;
+  border: 1px solid #dcdfe4;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(27, 38, 59, 0.15);
+  z-index: 1050;
+}
+
+.udc-body {
+  padding: 12px 16px;
+}
+.udc-title {
+  font-weight: 500;
+  color: #1b263b;
+}
+.udc-email {
+  color: #637a96;
+}
+.udc-role {
+  font-weight: 500;
+  color: #1b263b;
+}
+.udc-divider {
+  height: 1px;
+  background: #e5e7eb;
+}
+.udc-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: none;
+  color: #e05656;
+  font-weight: 600;
+}
+.udc-logout i {
+  color: #e05656;
+}
+.udc-logout:hover {
+  background: #fff5f5;
+}

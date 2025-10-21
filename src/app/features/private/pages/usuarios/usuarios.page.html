@@ -1,0 +1,145 @@
+<div class="py-4 usuarios-page">
+  <div class="row align-items-start mb-3">
+    <div class="col">
+      <h2 class="fw-bold title">Usuarios</h2>
+      <p class="text-secondary subtitle">Gestiona los usuarios del sistema</p>
+    </div>
+    <div class="col-auto ms-auto">
+      <button
+        class="btn btn-new-user"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+      >
+        <i class="bi bi-person-plus me-2"></i>
+        Nuevo Usuario
+      </button>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12 col-sm-6 col-md-5 col-lg-4">
+      <div class="search-input">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Buscar por nombre o correo..." />
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Card: Administrador -->
+    <div class="col-12 col-md-4">
+      <div class="user-card">
+        <div class="user-card-header mt-3">
+          <span class="role-badge admin"
+            ><i class="bi bi-shield me-1"></i> Administrador</span
+          >
+        </div>
+        <div class="user-card-body">
+          <div class="info-line">
+            <i class="bi bi-envelope me-2"></i>
+            <span>admin@conquistadores.com</span>
+          </div>
+          <div class="info-line">
+            <i class="bi bi-calendar3 me-2"></i>
+            <span>Creado: 14/10/2025</span>
+          </div>
+          <div class="actions mt-4">
+            <button class="btn btn-outline-primary-dark me-2">Editar</button>
+            <button class="btn btn-danger-soft">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card: Evaluador Principal -->
+    <div class="col-12 col-md-4">
+      <div class="user-card">
+        <div class="user-card-header mt-3">
+          <span class="role-badge evaluator"
+            ><i class="bi bi-award me-1"></i> Evaluador</span
+          >
+        </div>
+        <div class="user-card-body">
+          <div class="info-line">
+            <i class="bi bi-envelope me-2"></i>
+            <span>evaluador@conquistadores.com</span>
+          </div>
+          <div class="info-line">
+            <i class="bi bi-calendar3 me-2"></i>
+            <span>Creado: 14/10/2025</span>
+          </div>
+          <div class="actions mt-4">
+            <button class="btn btn-outline-primary-dark me-2">Editar</button>
+            <button class="btn btn-danger-soft">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered custom-modal">
+    <div class="modal-content user-modal">
+      <div class="modal-header border-0">
+        <div>
+          <h5 class="modal-title modal-title-main" id="exampleModalLabel">
+            Nuevo Usuario
+          </h5>
+          <p class="modal-subtitle">Crea un nuevo usuario para el sistema</p>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nombre Completo</label>
+          <input
+            type="text"
+            class="form-control input-field"
+            placeholder="Ej: Juan Pérez"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Correo Electrónico</label>
+          <input
+            type="email"
+            class="form-control input-field"
+            placeholder="usuario@ejemplo.com"
+          />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Rol</label>
+          <div class="d-flex align-items-center gap-2">
+            <select class="form-select input-select">
+              <option value="1">Evaluador</option>
+              <option value="2">Administrador</option>
+              <option value="3">Invitado</option>
+            </select>
+          </div>
+          <small class="text-muted helper-text"
+            >Solo puede ver evaluaciones y resultados</small
+          >
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary-dark">
+          Crear usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

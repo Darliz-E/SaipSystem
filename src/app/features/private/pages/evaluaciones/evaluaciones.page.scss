@@ -1,0 +1,267 @@
+.form-select {
+  width: 80%;
+  border: 1px solid #3132349e;
+  border-radius: 10px;
+  background-color: #e0e1de;
+  color: #313234;
+  font-weight: 400;
+}
+
+// Botones de acción dentro del card: ocupar todo el ancho del contenedor
+.botones-accion {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+}
+
+.botones-accion .btn {
+  flex: 1 1 0;
+}
+
+@media (max-width: 576px) {
+  .botones-accion {
+    flex-wrap: wrap;
+  }
+
+  .botones-accion .btn {
+    flex: 1 0 100%;
+  }
+}
+// Contenedor general
+.nav-pills-container {
+  background-color: #c5cbcf; // Fondo gris similar al de la imagen
+  border-radius: 20px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px; // separación entre pestañas
+  // Mobile-first: scroll horizontal cuando no caben
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  flex-wrap: nowrap;
+
+  .nav-item {
+    flex: 1;
+    text-align: center;
+
+    .nav-link {
+      color: #001528;
+      font-weight: 500;
+      border-radius: 20px;
+      padding: 6px 0;
+      background-color: transparent;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px; // Espacio entre ícono y texto
+    }
+
+    .nav-link.active {
+      background-color: #0f1c2d; // Azul oscuro
+      color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(15, 28, 45, 0.3); // borde difuso suave
+    }
+  }
+}
+
+.btn-light {
+  background-color: #e0e1de;
+  color: #0f1c2d; /* Color del texto e ícono (azul oscuro) */
+  font-size: 14px;
+  border: 1px solid #c3bcbc;
+  border-radius: 8px;
+  font-weight: 500;
+  display: inline-flex; //Alinea ícono y texto en una sola línea
+  align-items: center; // Centra verticalmente el ícono y texto /
+  gap: 6px; // Espacio entre ícono y texto
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #58678db4;
+  }
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.puntuacion {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #eceef1;
+  border-radius: 8px;
+  padding: 4px 12px;
+
+  p {
+    color: rgb(49, 50, 51);
+    font-weight: 500;
+    line-height: 0px;
+    margin-bottom: 0px !important;
+  }
+
+  h3 {
+    color: rgb(57, 168, 85);
+    font-weight: 600;
+  }
+}
+
+.observaciones {
+  display: flex; /* Pone los elementos en línea */
+  align-items: center; /* Los centra verticalmente */
+  gap: 8px; /* Espacio entre el ícono y el texto */
+  color: red;
+
+  .observaciones p {
+    margin: 0;
+    color: rgb(49, 50, 51);
+    font-weight: 500;
+  }
+
+  i {
+    color: #364553;
+    font-size: 16px;
+  }
+}
+
+.custom-button-tab {
+  // Mobile: cada pestaña ocupa su ancho y permite scroll horizontal
+  flex: 0 0 auto;
+  min-width: 160px;
+  color: #001528;
+  font-weight: 500;
+  border-radius: 20px;
+  padding: 8px 12px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &.active {
+    background-color: #0f1c2d; // Azul oscuro
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(15, 28, 45, 0.3); // borde difuso suave
+  }
+
+  &:hover {
+    background-color: #58678db4;
+    color: #ffffff;
+  }
+}
+
+// En pantallas medianas y grandes, las pestañas se distribuyen y no necesitan scroll
+@media (min-width: 576px) {
+  .nav-pills-container {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .custom-button-tab {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.botones-accion {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.botones-accion .btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #e5e5e5;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.botones-accion .btn .icono {
+  font-size: 16px;
+}
+
+/* Botón "Ver" */
+.ver {
+  background-color: #e5e5e5;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+
+  i {
+    color: #333;
+  }
+}
+.botones-accion .btn.ver:hover {
+  background-color: #d9d9d9;
+}
+
+/* Botón "Editar" */
+.botones-accion .btn.editar {
+  background-color: #e5e5e5;
+  color: #58678dee;
+}
+.botones-accion .btn.editar:hover {
+  background-color: #d9d9d9;
+}
+
+/* Botón "Eliminar" */
+.botones-accion .btn.eliminar {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #dc3545;
+}
+.botones-accion .btn.eliminar:hover {
+  background-color: #f8d7da;
+  border-color: #dc3545;
+}
+
+//primero esta el padre
+.observaciones {
+  color: rgb(80, 80, 88);
+  font-size: 16px;
+  font-weight: 500;
+  // aqui van los hijos
+  p {
+    font-size: 20px;
+    font-weight: 400;
+  }
+}
+
+.modal-content {
+  background-color: #e0e1dd;
+
+  .borders-club {
+    border-radius: 8px;
+    margin-top: 12px;
+    background-color: #d0d3d2;
+    padding: 4px 12px;
+
+    .datos {
+      color: #919fb0;
+    }
+  }
+
+  .borders-tipo-evaluacion {
+    border-radius: 8px;
+    margin-top: 15px;
+    background-color: #d0d3d2;
+    padding: 4px 12px;
+
+    .datos {
+      color: #919fb0;
+    }
+  }
+}

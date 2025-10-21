@@ -1,0 +1,230 @@
+<h2 class="fw-bold mt-4" style="color: #1b263b">Dashboard</h2>
+<div class="row">
+  <div class="col">
+    <p style="font-size: 1.1rem">
+      Bienvenido,
+      <span class="text-muted fw-bold">Administrador</span>
+    </p>
+  </div>
+  <div class="row">
+    <div class="col-12 mb-4 col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-end mb-2">
+            <div class="icon-container">
+              <i class="bi bi-people"></i>
+            </div>
+          </div>
+          <div>
+            <h5 class="card-title">Total de Clubes</h5>
+            <h2 class="fw-bold">5</h2>
+            <p class="card-text text-muted">Clubes registrados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mb-4 col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-end mb-2">
+            <div class="icon-container">
+              <i class="bi bi-clipboard-check"></i>
+            </div>
+          </div>
+          <div>
+            <h5 class="card-title">Total de Evaluaciones</h5>
+            <h2 class="fw-bold">24</h2>
+            <p class="card-text text-muted">Evaluaciones realizadas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mb-4 col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-end mb-2">
+            <div class="icon-container">
+              <i class="bi bi-graph-up"></i>
+            </div>
+          </div>
+          <div>
+            <h5 class="card-title">Promedio General</h5>
+            <h2 class="fw-bold">89%</h2>
+            <p class="card-text text-muted">Todas las evaluaciones</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mb-4 col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-end mb-2">
+            <div class="icon-container">
+              <i class="bi bi-award"></i>
+            </div>
+          </div>
+          <div>
+            <h5 class="card-title">Este Mes</h5>
+            <h2 class="fw-bold">0</h2>
+            <p class="card-text text-muted">Evaluaciones del mes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-5">
+    <div class="col-12 col-sm-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <i
+            class="bi bi-bar-chart-line d-flex justify-content-end"
+            style="font-size: 1.25rem; color: #1b263b"
+          ></i>
+          <h3 class="mb-4">Resumen por Tipo de Evaluación</h3>
+          <div class="row mb-4">
+            <div class="col">
+              <span class="Resumen"> Uniformidad </span>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-valuenow="10"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="margin-bottom: 0.5rem; height: 10px"
+              >
+                <div
+                  class="progress-bar progress-bar-striped"
+                  style="width: 10%"
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col">
+              <span class="Resumen"> Disciplina </span>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Success striped example"
+                aria-valuenow="25"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="margin-bottom: 0.5rem"
+                style="height: 10px"
+              >
+                <div
+                  class="progress-bar progress-bar-striped bg-success"
+                  style="width: 25%"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <span class="Resumen"> Marcha </span>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-label="Info striped example"
+                aria-valuenow="50"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                style="margin-bottom: 0.5rem"
+                style="height: 10px"
+              >
+                <div
+                  class="progress-bar progress-bar-striped bg-info"
+                  style="width: 50%"
+                ></div>
+              </div>
+            </div>
+            <div class="row mt-4">
+              <div class="col">
+                <span class="Resumen"> Pase de Lista </span>
+                <div
+                  class="progress"
+                  role="progressbar"
+                  aria-label="Warning striped example"
+                  aria-valuenow="75"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="height: 10px"
+                >
+                  <div
+                    class="progress-bar progress-bar-striped bg-warning"
+                    style="width: 75%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <i
+            class="bi bi-star d-flex justify-content-end"
+            style="font-size: 1.25rem; color: #1e2f50"
+          ></i>
+          <h3>Clubes Destacados</h3>
+          <div class="custom-card-club" *ngFor="let club of clubList">
+            <div class="number-avatar" [ngClass]="club.backgroundColor">
+              {{club.number}}
+            </div>
+            <div class="club-info">
+              <span class="club-name">{{club.name}}</span>
+              <span class="club-evaluation"
+                >{{club.evaluation}} evaluaciones</span
+              >
+            </div>
+            <div class="club-percent">
+              <span class="percent">{{club.percent}}%</span>
+              <span class="percent-label">{{club.percentLabel}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row d-flex align-items-center mb-3">
+            <div class="col-10">
+              <h3>Evaluaciones Recientes</h3>
+            </div>
+            <div class="col text-end">
+              <i
+                class="bi bi-clipboard-check"
+                style="font-size: 1.25rem; color: #1e2f50"
+              ></i>
+            </div>
+          </div>
+          <div
+            class="custom-card-evaluation"
+            *ngFor="let evaluation of evaluationList"
+          >
+            <div class="evaluation-info">
+              <span class="evaluation-name">{{evaluation.name}} </span>
+            </div>
+            <div class="evaluation-percent">
+              <div
+                class="alert px-2 py-1"
+                [ngClass]="evaluation.backgroundColor +' '+ evaluation.colorText"
+              >
+                {{evaluation.percent}}%
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-outline mt-5">
+            Ver todas las evaluaciones
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
