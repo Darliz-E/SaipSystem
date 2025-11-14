@@ -1,27 +1,40 @@
 # Saiph
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.16.
+Aplicación Angular para gestión interna de Saiph.
 
-## Development server
+## Desarrollo
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Arrancar servidor: `yarn start` (por defecto en `http://localhost:4200/`).
+- Compilar producción: `yarn build`.
 
-## Code scaffolding
+## Deploy a GitHub Pages (CI/CD)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Se incluye un workflow que despliega automáticamente a GitHub Pages al hacer push a `main`.
 
-## Build
+Pasos:
+- Configurar la rama de publicación `gh-pages` en el repositorio (se crea automáticamente en el primer deploy).
+- Asegurarse de que la página está habilitada en GitHub Pages y apunta a `gh-pages`.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Detalles:
+- Archivo: `.github/workflows/deploy.yml`.
+- Construye con `--base-href "/<repo>/"` para que el enrutamiento funcione bajo GitHub Pages.
+- Copia `404.html` desde `index.html` para soportar SPA.
 
-## Running unit tests
+## Deploy manual con Yarn
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+También puedes desplegar manualmente con Yarn:
 
-## Running end-to-end tests
+1. Establecer el nombre del repositorio en una variable de entorno (solo el nombre, sin usuario). Ejemplo:
+   - macOS/Linux: `export GH_REPO=SaipSystem`
+2. Ejecutar: `yarn deploy:gh`
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Qué hace:
+- Compila con `--base-href "/$GH_REPO/"`.
+- Copia `404.html`.
+- Publica `dist/saiph` en la rama `gh-pages` con `gh-pages`.
 
-## Further help
+## Notas
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Si tu repositorio se llama distinto, actualiza `GH_REPO` antes de desplegar.
+- Si usas una página de usuario/organización (`<usuario>.github.io`), cambia `--base-href "/"` en los pasos de build.
+- El deploy por Actions usa `yarn` y Node 18.
