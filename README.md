@@ -19,6 +19,11 @@ Detalles:
 - Archivo: `.github/workflows/deploy.yml`.
 - Construye con `--base-href "/<repo>/"` para que el enrutamiento funcione bajo GitHub Pages.
 - Copia `404.html` desde `index.html` para soportar SPA.
+- El workflow solicita permisos de escritura del token (`permissions: contents: write`) y publica a la rama `gh-pages`.
+
+Permisos necesarios:
+- En GitHub: Settings → Actions → General → Workflow permissions → seleccionar “Read and write permissions”.
+- Alternativamente, ya se declara en el workflow `permissions: contents: write` para permitir el push desde `github-actions[bot]`.
 
 ## Deploy manual con Yarn
 
