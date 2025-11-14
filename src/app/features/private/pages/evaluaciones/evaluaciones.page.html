@@ -1,154 +1,172 @@
-<h2 class="fw-bold mt-4" style="color: #1b263b">Evaluaciones</h2>
-<div class="row">
-  <div class="col">
-    <p style="color: rgb(79, 81, 83)">
-      Visualiza todas las evaluaciones realizadas desde la app móvil organizadas
-      por categoría
-    </p>
+<div class="py-4">
+  <h2 class="fw-bold" style="color: #1b263b">Evaluaciones</h2>
+  <div class="row">
+    <div class="col">
+      <p style="color: rgb(79, 81, 83)">
+        Visualiza todas las evaluaciones realizadas desde la app móvil organizadas por categoría
+      </p>
+    </div>
   </div>
-</div>
-<div class="row mt-2">
-  <div class="col-7 col-sm-2">
-    <p style="color: rgb(58, 59, 60); font-weight: 500">Filtral por club</p>
-    <select
-      class="form-select form-select-sm"
-      aria-label="Default select example"
-    >
-      <option selected>Todos los clubes</option>
-      <option value="1">Aguilas Doradas</option>
-      <option value="2">Leones Valientes</option>
-      <option value="3">Estrella del amanecer</option>
-      <option value="4">Conquistadores Unidos</option>
-    </select>
-  </div>
-</div>
 
-<div class="row mt-4">
-  <div class="col">
-    <div class="nav-pills-container">
-      <div
-        class="custom-button-tab"
-        (click)="changeTabActive(0)"
-        [class.active]="tabActiva === 0"
+  <div class="row mt-3 align-items-end">
+    <div class="col-12 col-md-4 col-lg-3 mb-3 mb-md-0">
+      <label class="filter-label">Filtrar por club</label>
+      <select
+        class="form-select form-select-custom"
+        aria-label="Filtrar por club"
+        [(ngModel)]="selectedClubId"
+        (change)="onClubChange($event)"
       >
-        <i class="bi bi-person me-2"></i> Uniformidad
-      </div>
-      <div
-        class="custom-button-tab"
-        (click)="changeTabActive(1)"
-        [class.active]="tabActiva === 1"
-      >
-        <i class="bi bi-award me-2"></i> Disciplina
-      </div>
-      <div
-        class="custom-button-tab"
-        (click)="changeTabActive(2)"
-        [class.active]="tabActiva === 2"
-      >
-        <i class="bi bi-flag me-2"></i> Marcha
-      </div>
-      <div
-        class="custom-button-tab"
-        (click)="changeTabActive(3)"
-        [class.active]="tabActiva === 3"
-      >
-        <i class="bi bi-list-check me-2"></i> Pase de Lista
-      </div>
+        <option value="">Todos los clubes</option>
+        <option *ngFor="let club of clubes" [value]="club.id">
+          {{ club.nombre }}
+        </option>
+      </select>
+      <small class="text-muted mt-1" *ngIf="isLoadingClubes">
+        <i class="bi bi-arrow-repeat spin-icon"></i> Cargando clubes...
+      </small>
     </div>
   </div>
 </div>
 
-<div class="row mt-4 align-items-center">
-  <div class="col-12 col-sm-6">
-    <h4 class="fw-bold mb-0" style="color: #1b263b">{{tituloActual}}</h4>
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="nav-pills-container">
+      <button
+        class="custom-button-tab"
+        (click)="changeTabActive(0)"
+        [class.active]="tabActiva === 0"
+        type="button"
+      >
+        <i class="bi bi-person"></i>
+        <span class="tab-text">Uniformidad</span>
+      </button>
+      <button
+        class="custom-button-tab"
+        (click)="changeTabActive(1)"
+        [class.active]="tabActiva === 1"
+        type="button"
+      >
+        <i class="bi bi-award"></i>
+        <span class="tab-text">Disciplina</span>
+      </button>
+      <button
+        class="custom-button-tab"
+        (click)="changeTabActive(2)"
+        [class.active]="tabActiva === 2"
+        type="button"
+      >
+        <i class="bi bi-flag"></i>
+        <span class="tab-text">Marcha</span>
+      </button>
+      <button
+        class="custom-button-tab"
+        (click)="changeTabActive(3)"
+        [class.active]="tabActiva === 3"
+        type="button"
+      >
+        <i class="bi bi-list-check"></i>
+        <span class="tab-text">Pase de Lista</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-    <p class="mb-0" style="color: rgb(58, 59, 60); font-weight: 400">
-      {{cantidadActual}} evaluaciones
+<div class="row mt-4 align-items-center mb-3">
+  <div class="col-12 col-md-6 mb-3 mb-md-0">
+    <h4 class="fw-bold mb-1" style="color: #1b263b">{{ tituloActual }}</h4>
+    <p class="mb-0 text-muted">
+      {{ cantidadActual }} {{ cantidadActual === 1 ? 'evaluación' : 'evaluaciones' }}
     </p>
   </div>
 
-  <!-- Columna derecha: botones -->
-  <div class="col-12 col-sm-6 text-end">
-    <button class="btn btn-light" (click)="generatePdf()">
-      <i class="bi bi-file-earmark-text"></i> PDF
+  <div class="col-12 col-md-6 text-md-end">
+    <button class="btn btn-export" (click)="generatePdf()" [disabled]="cantidadActual === 0">
+      <i class="bi bi-file-earmark-pdf"></i>
+      <span>Exportar PDF</span>
     </button>
   </div>
 </div>
 
+<!-- Contenido de Uniformidad -->
 <ng-container *ngIf="tabActiva === 0">
-  <div class="row mt-4 mb-4">
-    <div class="col-12 col-sm-4">
-      <div class="card" #cardToPdf>
+  <div class="row g-4" *ngIf="hasEvaluaciones">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card evaluation-card" #cardToPdf>
         <div class="card-body">
-          <div class="row d-flex align-items-center">
-            <div class="col-10">
-              <h5 class="card-title mt-2">Evaluación de Uniformidad</h5>
-            </div>
-            <div class="col text-end">
-              <span class="badge bg-dark">95%</span>
-            </div>
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5 class="card-title mb-0">Evaluación de Uniformidad</h5>
+            <span class="badge badge-score">95%</span>
           </div>
-          <div class="row">
-            <div class="col">
-              <small
-                style="color: rgba(106, 107, 108, 0.736); font-weight: 200"
-              >
-                Nombre del evaluador: <strong>Juan Pérez</strong>
-              </small>
-            </div>
+
+          <div class="evaluator-info mb-3">
+            <small class="text-muted">
+              Evaluador: <strong>Juan Pérez</strong>
+            </small>
           </div>
-          <div class="row mt-2">
-            <div class="col">
-              <div class="puntuacion">
-                <p>Puntuación:</p>
-                <h3>92/100</h3>
-              </div>
-            </div>
+
+          <div class="puntuacion mb-3">
+            <span class="puntuacion-label">Puntuación:</span>
+            <span class="puntuacion-value">92/100</span>
           </div>
-          <div class="row mt-3">
-            <div class="col observaciones">
-              <span>
-                <i class="bi bi-file-earmark-text me-2"></i>Observaciones
-              </span>
+
+          <div class="observaciones-section">
+            <div class="observaciones-header">
+              <i class="bi bi-file-earmark-text me-2"></i>
+              <span>Observaciones</span>
             </div>
+            <p class="observaciones-text">
+              Excelente presentación general, solo faltaron algunos detalles menores en insignias.
+            </p>
           </div>
-          <div class="row">
-            <div class="col">
-              <p>
-                Excelente presentación general, solo faltaron algunos detalles
-                menores en insignias.
-              </p>
-            </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col d-flex justify-content-start">
-              <div class="botones-accion">
-                <button
-                  class="btn ver"
-                  data-bs-toggle="modal"
-                  data-bs-target="#staticBackdrop"
-                >
-                  <i class="bi bi-eye"></i>Ver
-                </button>
-              </div>
-            </div>
+
+          <div class="card-actions">
+            <button
+              class="btn btn-view"
+              data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop"
+            >
+              <i class="bi bi-eye me-2"></i>Ver Detalles
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="!hasEvaluaciones">
+    <i class="bi bi-clipboard-x"></i>
+    <h5>No hay evaluaciones de uniformidad</h5>
+    <p>Las evaluaciones realizadas desde la app móvil aparecerán aquí</p>
+  </div>
 </ng-container>
 
+<!-- Contenido de Disciplina -->
 <ng-container *ngIf="tabActiva === 1">
-  <h2>Disciplina</h2>
+  <div class="empty-state">
+    <i class="bi bi-award"></i>
+    <h5>No hay evaluaciones de disciplina</h5>
+    <p>Las evaluaciones realizadas desde la app móvil aparecerán aquí</p>
+  </div>
 </ng-container>
 
+<!-- Contenido de Marcha -->
 <ng-container *ngIf="tabActiva === 2">
-  <h2>Marcha</h2>
+  <div class="empty-state">
+    <i class="bi bi-flag"></i>
+    <h5>No hay evaluaciones de marcha</h5>
+    <p>Las evaluaciones realizadas desde la app móvil aparecerán aquí</p>
+  </div>
 </ng-container>
 
+<!-- Contenido de Pase de Lista -->
 <ng-container *ngIf="tabActiva === 3">
-  <h2>Lista</h2>
+  <div class="empty-state">
+    <i class="bi bi-list-check"></i>
+    <h5>No hay pases de lista</h5>
+    <p>Los pases de lista realizados desde la app móvil aparecerán aquí</p>
+  </div>
 </ng-container>
 
 <!--MODAL-->

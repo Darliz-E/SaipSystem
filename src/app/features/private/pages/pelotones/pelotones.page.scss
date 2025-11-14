@@ -1,3 +1,11 @@
+// Paleta base
+$dark-blue: #1b263b;
+$steel-blue: #465a75;
+$bg-gray: #e0e1de;
+$border-gray: #dcdfe4;
+$text-muted: #5b6a7c;
+$danger-red: #a80b0b;
+
 .form-control {
   height: 40px;
   width: 100%;
@@ -20,11 +28,11 @@
   }
 }
 
-.btn-club {
+.btn-peloton {
   height: 40px;
   padding: 0 20px;
   border-radius: 9px;
-  background-color: #1b263b;
+  background-color: $dark-blue;
   font-size: 14px;
   font-weight: 500;
   color: #e3e6eb;
@@ -34,7 +42,7 @@
   white-space: nowrap;
 
   &:hover {
-    background-color: #465a75;
+    background-color: $steel-blue;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(27, 38, 59, 0.2);
   }
@@ -49,7 +57,7 @@
 }
 
 @media (max-width: 767.98px) {
-  .btn-club {
+  .btn-peloton {
     width: 100%;
   }
 }
@@ -104,8 +112,9 @@
   &:hover {
     background-color: #c061615b;
   }
+
   i {
-    color: #a80b0b;
+    color: $danger-red;
     font-size: 16px;
   }
 }
@@ -127,6 +136,7 @@
   font-weight: 500;
   color: #000000;
 }
+
 .form-control-control {
   height: 35px;
   width: 100%;
@@ -159,11 +169,11 @@ select.form-control-control {
 }
 
 .is-invalid {
-  border-color: #a80b0b !important;
+  border-color: $danger-red !important;
 }
 
 .invalid-feedback {
-  color: #a80b0b;
+  color: $danger-red;
   font-size: 0.875rem;
   margin-top: 4px;
   display: block;
@@ -174,26 +184,20 @@ select.form-control-control {
   width: 25%;
   border-radius: 9px;
   border: 1px solid #e0e1dd;
-  background-color: #1b263b;
+  background-color: $dark-blue;
   font-size: 14px;
   font-weight: 500;
   color: #ffffff;
+
+  &:hover {
+    background-color: $steel-blue;
+  }
 }
 
 .modal-body {
   font-size: 15px;
   font-weight: 500;
   color: #36526e;
-}
-.btn-eliminar {
-  height: 35px;
-  width: 25%;
-  border-radius: 9px;
-  border: 1px solid #e0e1dd;
-  background-color: #a80b0b;
-  font-size: 14px;
-  font-weight: 500;
-  color: #ffffff;
 }
 
 // Spinner en botón
@@ -205,7 +209,7 @@ select.form-control-control {
 
 // Mejoras para las cards
 .card {
-  border: 1px solid #dcdfe4;
+  border: 1px solid $border-gray;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(27, 38, 59, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -214,4 +218,65 @@ select.form-control-control {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(27, 38, 59, 0.1);
   }
+}
+
+// Badges para tipos de marcha
+.badge-tipo {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tipo-drill {
+  background-color: #1b263b;
+  color: #ffffff;
+}
+
+.tipo-fancy {
+  background-color: #465a75;
+  color: #ffffff;
+}
+
+.tipo-exhibition {
+  background-color: #778da9;
+  color: #ffffff;
+}
+
+.tipo-color {
+  background-color: #e63946;
+  color: #ffffff;
+}
+
+.tipo-flag {
+  background-color: #f77f00;
+  color: #ffffff;
+}
+
+.tipo-rifle {
+  background-color: #06a77d;
+  color: #ffffff;
+}
+
+.tipo-saber {
+  background-color: #9d4edd;
+  color: #ffffff;
+}
+
+.tipo-tradicional {
+  background-color: #2a9d8f;
+  color: #ffffff;
+}
+
+.tipo-creativa {
+  background-color: #e76f51;
+  color: #ffffff;
+}
+
+.tipo-default {
+  background-color: #6c757d;
+  color: #ffffff;
 }

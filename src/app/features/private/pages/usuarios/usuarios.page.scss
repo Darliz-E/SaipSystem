@@ -210,4 +210,60 @@ $danger-red-border: #e89999;
 .helper-text {
   margin-top: 6px;
 }
-// .check-icon eliminado al revertir el ícono en el label de Rol
+
+// Password input con botón de mostrar/ocultar
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-field {
+    padding-right: 45px;
+  }
+
+  .password-toggle-btn {
+    position: absolute;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: $text-muted;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $dark-blue;
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Estilos para validación
+.is-invalid {
+  border-color: $danger-red !important;
+}
+
+.invalid-feedback {
+  color: $danger-red;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+// Badge para invitado
+.role-badge.guest {
+  background: #6c757d;
+  color: #fff;
+}
+
+// Spinner en botón
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}

@@ -20,60 +20,72 @@
     <div class="col-12 col-sm-6 col-md-5 col-lg-4">
       <div class="search-input">
         <i class="bi bi-search"></i>
-        <input type="text" placeholder="Buscar por nombre o correo..." />
+        <input
+          type="text"
+          placeholder="Buscar por nombre o correo..."
+          [(ngModel)]="searchTerm"
+          (input)="filterUsers()"
+        />
       </div>
     </div>
   </div>
 
-  <div class="row g-4">
-    <!-- Card: Administrador -->
-    <div class="col-12 col-md-4">
+  <div class="row g-4" *ngIf="!isLoadingUsers">
+    <div class="col-12 col-md-4" *ngFor="let user of filteredUsers">
       <div class="user-card">
         <div class="user-card-header mt-3">
-          <span class="role-badge admin"
-            ><i class="bi bi-shield me-1"></i> Administrador</span
-          >
+          <span class="role-badge" [ngClass]="{
+            'admin': user.rol === 'administrador',
+            'evaluator': user.rol === 'evaluador',
+            'guest': user.rol === 'invitado'
+          }">
+            <i class="bi" [ngClass]="{
+              'bi-shield': user.rol === 'administrador',
+              'bi-award': user.rol === 'evaluador',
+              'bi-eye': user.rol === 'invitado'
+            }" class="me-1"></i>
+            {{ user.rol | titlecase }}
+          </span>
         </div>
         <div class="user-card-body">
           <div class="info-line">
+            <i class="bi bi-person me-2"></i>
+            <span>{{ user.nombre }}</span>
+          </div>
+          <div class="info-line">
             <i class="bi bi-envelope me-2"></i>
-            <span>admin@conquistadores.com</span>
+            <span>{{ user.email }}</span>
           </div>
           <div class="info-line">
             <i class="bi bi-calendar3 me-2"></i>
-            <span>Creado: 14/10/2025</span>
+            <span>Creado: {{ user.createdAt?.toDate() | date:'dd/MM/yyyy' }}</span>
           </div>
           <div class="actions mt-4">
-            <button class="btn btn-outline-primary-dark me-2">Editar</button>
-            <button class="btn btn-danger-soft">Eliminar</button>
+            <button class="btn btn-outline-primary-dark me-2" (click)="editUser(user)">
+              Editar
+            </button>
+            <button class="btn btn-danger-soft" (click)="confirmDelete(user)">
+              Eliminar
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Card: Evaluador Principal -->
-    <div class="col-12 col-md-4">
-      <div class="user-card">
-        <div class="user-card-header mt-3">
-          <span class="role-badge evaluator"
-            ><i class="bi bi-award me-1"></i> Evaluador</span
-          >
-        </div>
-        <div class="user-card-body">
-          <div class="info-line">
-            <i class="bi bi-envelope me-2"></i>
-            <span>evaluador@conquistadores.com</span>
-          </div>
-          <div class="info-line">
-            <i class="bi bi-calendar3 me-2"></i>
-            <span>Creado: 14/10/2025</span>
-          </div>
-          <div class="actions mt-4">
-            <button class="btn btn-outline-primary-dark me-2">Editar</button>
-            <button class="btn btn-danger-soft">Eliminar</button>
-          </div>
-        </div>
+    <div class="col-12" *ngIf="filteredUsers.length === 0">
+      <div class="text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: #8b97a6;"></i>
+        <p class="text-muted mt-3">No se encontraron usuarios</p>
       </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="isLoadingUsers">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="text-muted mt-3">Cargando usuarios...</p>
     </div>
   </div>
 </div>
@@ -102,42 +114,89 @@
         ></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Nombre Completo</label>
-          <input
-            type="text"
-            class="form-control input-field"
-            placeholder="Ej: Juan Pérez"
-          />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Correo Electrónico</label>
-          <input
-            type="email"
-            class="form-control input-field"
-            placeholder="usuario@ejemplo.com"
-          />
-        </div>
-        <div class="mb-2">
-          <label class="form-label">Rol</label>
-          <div class="d-flex align-items-center gap-2">
-            <select class="form-select input-select">
-              <option value="1">Evaluador</option>
-              <option value="2">Administrador</option>
-              <option value="3">Invitado</option>
-            </select>
+        <form [formGroup]="userForm">
+          <div class="mb-3">
+            <label class="form-label">Nombre Completo</label>
+            <input
+              type="text"
+              class="form-control input-field"
+              placeholder="Ej: Juan Pérez"
+              formControlName="nombre"
+              [class.is-invalid]="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched">
+              El nombre es requerido
+            </div>
           </div>
-          <small class="text-muted helper-text"
-            >Solo puede ver evaluaciones y resultados</small
-          >
-        </div>
+
+          <div class="mb-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input
+              type="email"
+              class="form-control input-field"
+              placeholder="usuario@ejemplo.com"
+              formControlName="email"
+              [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+            />
+            <div class="invalid-feedback" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+              Ingresa un correo válido
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <div class="password-input-wrapper">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control input-field"
+                placeholder="Mínimo 6 caracteres"
+                formControlName="password"
+                [class.is-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+              />
+              <button
+                type="button"
+                class="password-toggle-btn"
+                (click)="togglePasswordVisibility()"
+                [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              >
+                <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback d-block" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+              La contraseña debe tener al menos 6 caracteres
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Rol</label>
+            <div class="d-flex align-items-center gap-2">
+              <select class="form-select input-select" formControlName="rol">
+                <option value="evaluador">Evaluador</option>
+                <option value="administrador">Administrador</option>
+                <option value="invitado">Invitado</option>
+              </select>
+            </div>
+            <small class="text-muted helper-text">
+              {{ getRolDescription() }}
+            </small>
+          </div>
+        </form>
       </div>
       <div class="modal-footer border-0">
-        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal" (click)="closeModal()">
           Cancelar
         </button>
-        <button type="button" class="btn btn-primary-dark">
-          Crear usuario
+        <button
+          type="button"
+          class="btn btn-primary-dark"
+          (click)="saveUser()"
+          [disabled]="userForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Actualizar' : 'Crear usuario' }}</span>
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Guardando...
+          </span>
         </button>
       </div>
     </div>

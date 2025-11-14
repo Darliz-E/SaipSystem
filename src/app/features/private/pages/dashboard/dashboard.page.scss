@@ -1,48 +1,81 @@
 .dashboard-card {
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s, box-shadow 0.3s;
   border: none;
   height: 100%;
-
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   }
+
   .card-body {
     padding: 1.5rem;
   }
 
   .card-title {
-    color: #6c757d;
+    color: rgba(0, 0, 0, 0.6);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    font-weight: 500;
   }
 
   h2 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: #1b263b;
+    font-weight: 700;
   }
 
   .card-text {
     font-size: 0.8rem;
     margin-bottom: 0;
+    color: rgba(0, 0, 0, 0.5);
   }
 
   .icon-container {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background-color: #ebeef1d2;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s ease;
 
     i {
-      font-size: 1.09rem;
-      color: #323946;
+      font-size: 1.2rem;
     }
+
+    &.icon-clubes {
+      background-color: #e3f2fd;
+      i {
+        color: #1976d2;
+      }
+    }
+
+    &.icon-evaluaciones {
+      background-color: #f3e5f5;
+      i {
+        color: #7b1fa2;
+      }
+    }
+
+    &.icon-promedio {
+      background-color: #e8f5e9;
+      i {
+        color: #388e3c;
+      }
+    }
+
+    &.icon-usuarios {
+      background-color: #fff3e0;
+      i {
+        color: #f57c00;
+      }
+    }
+  }
+
+  &:hover .icon-container {
+    transform: scale(1.1);
   }
 }
 
@@ -188,4 +221,37 @@ h3 {
   font-size: 1.25rem;
   font-weight: bold;
   color: #1e2f50;
+}
+
+// Colores específicos para cada card
+.card-clubes {
+  background-color: #e3f2fd;
+
+  h2 {
+    color: #1565c0;
+  }
+}
+
+.card-evaluaciones {
+  background-color: #f3e5f5;
+
+  h2 {
+    color: #6a1b9a;
+  }
+}
+
+.card-promedio {
+  background-color: #e8f5e9;
+
+  h2 {
+    color: #2e7d32;
+  }
+}
+
+.card-usuarios {
+  background-color: #fff3e0;
+
+  h2 {
+    color: #e65100;
+  }
 }

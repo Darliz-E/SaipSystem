@@ -1,61 +1,102 @@
 <div class="app-content">
-  <nav class="navbar navbar-expand-lg">
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#"
-        ><div class="logo-container">
-          <i class="bi bi-shield text-white"></i>
+      <a class="navbar-brand fw-bold" href="#">
+        <div class="logo-container">
+          <lucide-icon name="shield" class="text-white"></lucide-icon>
         </div>
-        Saiph</a
+        <span class="brand-text">Saiph</span>
+      </a>
+
+      <div class="navbar-actions">
+        <!-- Avatar button visible en móvil -->
+        <button
+          class="btn avatar-btn d-lg-none"
+          type="button"
+          (click)="toggleUserMenu($event)"
+          aria-haspopup="true"
+          [attr.aria-expanded]="isUserMenuOpen ? 'true' : 'false'"
+        >
+          {{ getUserInitials() }}
+        </button>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          (click)="toggleNavbar()"
+          [attr.aria-expanded]="isNavbarOpen"
+          aria-controls="navbarSupportedContent"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <div
+        class="navbar-collapse"
+        [class.show]="isNavbarOpen"
+        id="navbarSupportedContent"
       >
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a
               class="nav-link"
               routerLink="/private/dashboard"
               routerLinkActive="active"
-              >Dashboard</a
+              (click)="closeNavbar()"
             >
+              <lucide-icon name="gauge" class="nav-icon"></lucide-icon>
+              <span>Dashboard</span>
+            </a>
           </li>
           <li class="nav-item">
             <a
               class="nav-link"
               routerLink="/private/clubes"
               routerLinkActive="active"
-              >Clubes</a
+              (click)="closeNavbar()"
             >
+              <lucide-icon name="users" class="nav-icon"></lucide-icon>
+              <span>Clubes</span>
+            </a>
           </li>
-
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/private/pelotones"
+              routerLinkActive="active"
+              (click)="closeNavbar()"
+            >
+              <lucide-icon name="flag" class="nav-icon"></lucide-icon>
+              <span>Pelotones</span>
+            </a>
+          </li>
           <li class="nav-item">
             <a
               class="nav-link"
               routerLink="/private/evaluaciones"
               routerLinkActive="active"
-              >Evaluaciones</a
+              (click)="closeNavbar()"
             >
+              <lucide-icon name="clipboard-check" class="nav-icon"></lucide-icon>
+              <span>Evaluaciones</span>
+            </a>
           </li>
-
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="isAdmin()">
             <a
               class="nav-link"
               routerLink="/private/usuarios"
               routerLinkActive="active"
-              >Usuarios</a
+              (click)="closeNavbar()"
             >
+              <lucide-icon name="user" class="nav-icon"></lucide-icon>
+              <span>Usuarios</span>
+            </a>
           </li>
         </ul>
-        <div class="d-flex align-items-center ms-auto user-menu-wrapper" role="presentation">
+
+        <!-- User menu para desktop -->
+        <div class="user-menu-wrapper d-none d-lg-flex" role="presentation">
           <button
             class="btn avatar-btn"
             type="button"
@@ -63,30 +104,47 @@
             aria-haspopup="true"
             [attr.aria-expanded]="isUserMenuOpen ? 'true' : 'false'"
           >
-            A
+            {{ getUserInitials() }}
           </button>
-          <!-- Menú de usuario anclado al botón A -->
-          <div
-            class="user-dropdown-card"
-            *ngIf="isUserMenuOpen"
-            (click)="$event.stopPropagation()"
-          >
-            <div class="udc-body">
-              <div class="udc-title">Administrador</div>
-              <div class="udc-email">admin@conquistadores.com</div>
-              <div class="udc-role">Administrador</div>
-            </div>
-            <div class="udc-divider"></div>
-            <button class="udc-logout" type="button">
-              <i class="bi bi-box-arrow-right me-2"></i>
-              Cerrar Sesión
-            </button>
-          </div>
         </div>
+      </div>
+
+      <!-- Dropdown del usuario (fuera del collapse) -->
+      <div
+        class="user-dropdown-card"
+        *ngIf="isUserMenuOpen"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="udc-body">
+          <div class="udc-title">{{ currentUser?.nombre || 'Usuario' }}</div>
+          <div class="udc-email">{{ currentUser?.email || 'email@ejemplo.com' }}</div>
+          <div class="udc-role">{{ currentUser?.rol || 'Usuario' }}</div>
+        </div>
+        <div class="udc-divider"></div>
+        <a class="udc-link" routerLink="/private/about" (click)="isUserMenuOpen = false">
+          <i class="bi bi-info-circle me-2"></i>
+          <span>Acerca de</span>
+        </a>
+        <div class="udc-divider"></div>
+        <button class="udc-logout" type="button" (click)="logout()">
+          <lucide-icon name="log-out" class="logout-icon"></lucide-icon>
+          <span>Cerrar Sesión</span>
+        </button>
       </div>
     </div>
   </nav>
-  <div class="container-fluid">
-    <router-outlet></router-outlet>
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
   </div>
+
+  <footer class="app-footer">
+    <div class="container-fluid">
+      <span class="footer-text">Saiph - By Orion System</span>
+      <span class="footer-divider">•</span>
+      <span class="footer-version">v0.0.0</span>
+    </div>
+  </footer>
 </div>

@@ -1,9 +1,9 @@
 <div class="py-4">
-  <h2 class="fw-bold" style="color: #1b263b">Gestión de Clubes</h2>
+  <h2 class="fw-bold" style="color: #1b263b">Gestión de Pelotones</h2>
   <div class="row">
     <div class="col">
       <p style="color: rgb(79, 81, 83)">
-        Administra los clubes de conquistadores registrados en el sistema
+        Administra los pelotones de marcha registrados en el sistema
       </p>
     </div>
   </div>
@@ -14,61 +14,62 @@
         <input
           type="text"
           class="form-control"
-          placeholder="Buscar por nombre, zona o director..."
+          placeholder="Buscar por nombre, instructor o tipo de marcha..."
           [(ngModel)]="searchTerm"
-          (input)="filterClubes()"
+          (input)="filterPelotones()"
         />
       </div>
     </div>
     <div class="col-12 col-md-4 col-lg-6 text-md-end">
-      <button
-        class="btn-club"
-        (click)="openModal()"
-      >
-        <i class="bi bi-plus"></i> Agregar Club
+      <button class="btn-peloton" (click)="openModal()">
+        <i class="bi bi-plus"></i> Agregar Pelotón
       </button>
     </div>
   </div>
 
-  <!-- Lista de clubes -->
-  <div class="row mt-4" *ngIf="!isLoadingClubes">
-    <div class="col-12 mb-4 col-md-4" *ngFor="let club of filteredClubes">
+  <!-- Lista de pelotones -->
+  <div class="row mt-4" *ngIf="!isLoadingPelotones">
+    <div class="col-12 mb-4 col-md-4" *ngFor="let peloton of filteredPelotones">
       <div class="card">
         <div class="card-body">
-          <h5 class="mb-4" style="font-size: 1.2rem">{{ club.nombre }}</h5>
+          <h5 class="mb-3" style="font-size: 1.2rem">{{ peloton.nombre }}</h5>
+
           <div class="row mb-2">
             <div class="col">
-              <i class="bi bi-geo-alt me-2"></i>
-              <span style="color: rgb(80, 80, 80); font-weight: 500;">
-                {{ club.zona }}
+              <i class="bi bi-flag me-2"></i>
+              <span class="badge-tipo" [ngClass]="getTipoClass(peloton.tipoMarcha)">
+                {{ peloton.tipoMarcha }}
               </span>
             </div>
           </div>
+
           <div class="row mb-2">
             <div class="col">
               <i class="bi bi-people me-2"></i>
               <span style="color: rgb(80, 80, 80)">
-                <strong style="margin-right: 4px">{{ club.cantidadMiembros }}</strong>
+                <strong style="margin-right: 4px">{{ peloton.cantidadMiembros }}</strong>
                 <small style="color: rgb(80, 80, 80); font-weight: 400; font-size: medium;">
                   Miembros
                 </small>
               </span>
             </div>
           </div>
+
           <div class="row">
             <div class="col">
-              <i class="bi bi-person me-2"></i>
+              <i class="bi bi-person-badge me-2"></i>
               <span style="color: rgb(80, 80, 80); font-weight: 400; font-size: medium;">
-                Director: {{ club.director }}
+                Instructor: {{ peloton.instructor }}
               </span>
             </div>
           </div>
+
           <div class="row mt-4">
             <div class="col">
-              <button class="btn-editar" (click)="editClub(club)">
+              <button class="btn-editar" (click)="editPeloton(peloton)">
                 Editar
               </button>
-              <button class="btn-delete btn-sm ms-2" (click)="confirmDelete(club)">
+              <button class="btn-delete btn-sm ms-2" (click)="confirmDelete(peloton)">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -77,44 +78,44 @@
       </div>
     </div>
 
-    <div class="col-12" *ngIf="filteredClubes.length === 0">
+    <div class="col-12" *ngIf="filteredPelotones.length === 0">
       <div class="text-center py-5">
         <i class="bi bi-inbox" style="font-size: 3rem; color: #8b97a6;"></i>
-        <p class="text-muted mt-3">No se encontraron clubes</p>
+        <p class="text-muted mt-3">No se encontraron pelotones</p>
       </div>
     </div>
   </div>
 
   <!-- Loading -->
-  <div class="row mt-4" *ngIf="isLoadingClubes">
+  <div class="row mt-4" *ngIf="isLoadingPelotones">
     <div class="col-12 text-center py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <p class="text-muted mt-3">Cargando clubes...</p>
+      <p class="text-muted mt-3">Cargando pelotones...</p>
     </div>
   </div>
 </div>
 
-<!-- Modal para Crear/Editar Club -->
+<!-- Modal para Crear/Editar Pelotón -->
 <div
   class="modal fade"
-  id="clubModal"
+  id="pelotonModal"
   data-bs-backdrop="static"
   data-bs-keyboard="false"
   tabindex="-1"
-  aria-labelledby="clubModalLabel"
+  aria-labelledby="pelotonModalLabel"
   aria-hidden="true"
 >
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header border-0 pb-0">
         <div class="w-100">
-          <h6 class="modal-title fs-5 mb-0" id="clubModalLabel">
-            {{ isEditMode ? 'Editar Club' : 'Agregar Nuevo Club' }}
+          <h6 class="modal-title fs-5 mb-0" id="pelotonModalLabel">
+            {{ isEditMode ? 'Editar Pelotón' : 'Agregar Nuevo Pelotón' }}
           </h6>
           <span class="d-block text-muted small mt-1">
-            {{ isEditMode ? 'Actualiza la información del club' : 'Registra un nuevo club en el sistema' }}
+            {{ isEditMode ? 'Actualiza la información del pelotón' : 'Registra un nuevo pelotón en el sistema' }}
           </span>
         </div>
         <button
@@ -126,33 +127,33 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="clubForm">
+        <form [formGroup]="pelotonForm">
           <div class="mb-3">
-            <label for="clubName" class="form-label">Nombre del Club</label>
+            <label for="nombre" class="form-label">Nombre del Pelotón</label>
             <input
               type="text"
               class="form-control-control"
-              placeholder="Ej: Águilas Doradas"
+              placeholder="Ej: Águilas de Fuego"
               formControlName="nombre"
-              [class.is-invalid]="clubForm.get('nombre')?.invalid && clubForm.get('nombre')?.touched"
+              [class.is-invalid]="pelotonForm.get('nombre')?.invalid && pelotonForm.get('nombre')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="clubForm.get('nombre')?.invalid && clubForm.get('nombre')?.touched">
-              El nombre del club es requerido
+            <div class="invalid-feedback" *ngIf="pelotonForm.get('nombre')?.invalid && pelotonForm.get('nombre')?.touched">
+              El nombre del pelotón es requerido
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="zona" class="form-label">Zona</label>
+            <label for="tipoMarcha" class="form-label">Tipo de Marcha</label>
             <select
               class="form-control-control"
-              formControlName="zona"
-              [class.is-invalid]="clubForm.get('zona')?.invalid && clubForm.get('zona')?.touched"
+              formControlName="tipoMarcha"
+              [class.is-invalid]="pelotonForm.get('tipoMarcha')?.invalid && pelotonForm.get('tipoMarcha')?.touched"
             >
-              <option value="" disabled>Selecciona una zona</option>
-              <option *ngFor="let zona of zonas" [value]="zona">{{ zona }}</option>
+              <option value="" disabled>Selecciona un tipo de marcha</option>
+              <option *ngFor="let tipo of tiposMarcha" [value]="tipo">{{ tipo }}</option>
             </select>
-            <div class="invalid-feedback" *ngIf="clubForm.get('zona')?.invalid && clubForm.get('zona')?.touched">
-              La zona es requerida
+            <div class="invalid-feedback" *ngIf="pelotonForm.get('tipoMarcha')?.invalid && pelotonForm.get('tipoMarcha')?.touched">
+              El tipo de marcha es requerido
             </div>
           </div>
 
@@ -163,30 +164,30 @@
             <input
               type="number"
               class="form-control-control"
-              placeholder="Ej: 25"
+              placeholder="Ej: 12"
               min="0"
-              max="500"
+              max="100"
               formControlName="cantidadMiembros"
-              [class.is-invalid]="clubForm.get('cantidadMiembros')?.invalid && clubForm.get('cantidadMiembros')?.touched"
+              [class.is-invalid]="pelotonForm.get('cantidadMiembros')?.invalid && pelotonForm.get('cantidadMiembros')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="clubForm.get('cantidadMiembros')?.invalid && clubForm.get('cantidadMiembros')?.touched">
+            <div class="invalid-feedback" *ngIf="pelotonForm.get('cantidadMiembros')?.invalid && pelotonForm.get('cantidadMiembros')?.touched">
               La cantidad de miembros es requerida
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="director" class="form-label">
-              Nombre del Director
+            <label for="instructor" class="form-label">
+              Nombre del Instructor
             </label>
             <input
               type="text"
               class="form-control-control"
-              placeholder="Ej: Juan Pérez"
-              formControlName="director"
-              [class.is-invalid]="clubForm.get('director')?.invalid && clubForm.get('director')?.touched"
+              placeholder="Ej: María González"
+              formControlName="instructor"
+              [class.is-invalid]="pelotonForm.get('instructor')?.invalid && pelotonForm.get('instructor')?.touched"
             />
-            <div class="invalid-feedback" *ngIf="clubForm.get('director')?.invalid && clubForm.get('director')?.touched">
-              El nombre del director es requerido
+            <div class="invalid-feedback" *ngIf="pelotonForm.get('instructor')?.invalid && pelotonForm.get('instructor')?.touched">
+              El nombre del instructor es requerido
             </div>
           </div>
         </form>
@@ -198,10 +199,10 @@
         <button
           type="button"
           class="btn-actualizar"
-          (click)="saveClub()"
-          [disabled]="clubForm.invalid || isLoading"
+          (click)="savePeloton()"
+          [disabled]="pelotonForm.invalid || isLoading"
         >
-          <span *ngIf="!isLoading">{{ isEditMode ? 'Actualizar' : 'Crear Club' }}</span>
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Actualizar' : 'Crear Pelotón' }}</span>
           <span *ngIf="isLoading">
             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
             Guardando...

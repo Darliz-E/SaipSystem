@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-declare var $: any;
+import { FirebaseService } from '../../../../core/services/firebase.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -8,6 +7,12 @@ declare var $: any;
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit {
+  totalClubes: number = 0;
+  totalUsuarios: number = 0;
+  isLoadingClubes: boolean = true;
+  isLoadingUsuarios: boolean = true;
+  currentUser: any = null;
+
   clubList = [
     {
       number: 1,
@@ -49,8 +54,6 @@ export class DashboardPage implements OnInit {
       percentLabel: 'Promedio',
       backgroundColor: 'f0b100',
     },
-
-
   ];
 
   evaluationList = [
@@ -85,7 +88,45 @@ export class DashboardPage implements OnInit {
       backgroundColor: 'alert-primary',
     },
   ];
-  constructor() { }
 
-  ngOnInit(): void { }
+  constructor(private firebaseService: FirebaseService) {}
+
+  ngOnInit(): void {
+    this.loadCurrentUser();
+    this.loadClubesCount();
+    this.loadUsuariosCount();
+  }
+
+  loadCurrentUser() {
+    const userStr = localStorage.getItem('currentUser');
+    if (userStr) {
+      this.currentUser = JSON.parse(userStr);
+    }
+  }
+
+  async loadClubesCount() {
+    try {
+      this.isLoadingClubes = true;
+      const clubes = await this.firebaseService.getDocuments('clubes');
+      this.totalClubes = clubes.length;
+    } catch (error) {
+      console.error('Error cargando clubes:', error);
+      this.totalClubes = 0;
+    } finally {
+      this.isLoadingClubes = false;
+    }
+  }
+
+  async loadUsuariosCount() {
+    try {
+      this.isLoadingUsuarios = true;
+      const usuarios = await this.firebaseService.getDocuments('usuarios');
+      this.totalUsuarios = usuarios.length;
+    } catch (error) {
+      console.error('Error cargando usuarios:', error);
+      this.totalUsuarios = 0;
+    } finally {
+      this.isLoadingUsuarios = false;
+    }
+  }
 }
