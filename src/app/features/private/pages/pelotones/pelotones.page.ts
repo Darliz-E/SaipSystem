@@ -32,21 +32,16 @@ export class PelotonesPage implements OnInit {
   modalInstance: any;
 
   tiposMarcha: string[] = [
-    'Drill',
+    'Militar Drill',
     'Fancy Drill',
-    'Exhibition Drill',
-    'Color Guard',
-    'Flag Corps',
-    'Rifle Drill',
-    'Saber Drill',
-    'Marcha Tradicional',
-    'Marcha Creativa',
+    'Soundtrack',
+    'Silent Drill',
   ];
 
   constructor(
     private fb: FormBuilder,
     private firebaseService: FirebaseService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
