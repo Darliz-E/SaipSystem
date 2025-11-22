@@ -217,9 +217,12 @@
                   <div class="resumen-value-big">{{ getPromedioPeloton(pelotonId) }}</div>
                 </div>
               </div>
-              <div class="col-12 col-md-2 d-flex align-items-end">
+              <div class="col-12 col-md-2 d-flex align-items-end gap-2">
                 <button class="btn btn-sm btn-primary w-100" (click)="exportarPelotoPDF(pelotonId)">
                   <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                </button>
+                <button class="btn btn-sm btn-success w-100 d-md-none" (click)="imprimirTicket(pelotonId)">
+                  <i class="bi bi-printer me-1"></i>Ticket
                 </button>
               </div>
             </div>
