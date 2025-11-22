@@ -1,0 +1,25 @@
+{
+  "name": "Saiph - Sistema de Evaluaciones",
+  "short_name": "Saiph",
+  "description": "Sistema de gestión y evaluación de clubes, pelotones y marchas",
+  "theme_color": "#1b263b",
+  "background_color": "#e0e1de",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
