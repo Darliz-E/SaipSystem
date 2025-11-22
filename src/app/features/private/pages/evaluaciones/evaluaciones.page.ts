@@ -700,14 +700,18 @@ export class EvaluacionesPage implements OnInit {
   }
 
   imprimirTicket(pelotonId: string) {
-    const evaluaciones = this.getEvaluacionesAgrupadasPorPeloton()[pelotonId];
-    if (!evaluaciones || evaluaciones.length === 0) return;
+    try {
+      const evaluaciones = this.getEvaluacionesAgrupadasPorPeloton()[pelotonId];
+      if (!evaluaciones || evaluaciones.length === 0) {
+        alert('No hay evaluaciones para imprimir');
+        return;
+      }
 
-    const peloton = evaluaciones[0];
-    const promedio = this.getPromedioPeloton(pelotonId);
+      const peloton = evaluaciones[0];
+      const promedio = this.getPromedioPeloton(pelotonId);
 
-    // Crear contenido HTML para impresión térmica de 58mm
-    let ticketHTML = `
+      // Crear contenido HTML para impresión térmica de 58mm
+      let ticketHTML = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -785,15 +789,15 @@ export class EvaluacionesPage implements OnInit {
           <div class="center bold" style="margin-bottom: 5px;">EVALUACIONES</div>
     `;
 
-    // Agregar cada evaluación
-    evaluaciones.forEach((evaluacion, index) => {
-      ticketHTML += `
+      // Agregar cada evaluación
+      evaluaciones.forEach((evaluacion, index) => {
+        ticketHTML += `
           <div style="margin: 5px 0; padding: 3px 0; ${
             index > 0 ? 'border-top: 1px dotted #000;' : ''
           }">
             <div class="bold">${index + 1}. ${
-        evaluacion.evaluadorNombre || evaluacion.evaluadorEmail
-      }</div>
+          evaluacion.evaluadorNombre || evaluacion.evaluadorEmail
+        }</div>
             ${
               evaluacion.coEvaluadores && evaluacion.coEvaluadores.length > 0
                 ? `<div style="font-size: 8px;">Co-eval: ${this.getCoEvaluadoresText(
@@ -810,40 +814,40 @@ export class EvaluacionesPage implements OnInit {
             )}</div>
       `;
 
-      // Agregar criterios base
-      if (evaluacion.items && evaluacion.items.length > 0) {
-        ticketHTML += `<div style="margin-top: 3px; font-size: 9px;">`;
-        evaluacion.items.forEach((item) => {
-          ticketHTML += `
+        // Agregar criterios base
+        if (evaluacion.items && evaluacion.items.length > 0) {
+          ticketHTML += `<div style="margin-top: 3px; font-size: 9px;">`;
+          evaluacion.items.forEach((item) => {
+            ticketHTML += `
             <div class="row">
               <span>${item.name}:</span>
               <span>${item.value}/${item.max}</span>
             </div>
           `;
-        });
-        ticketHTML += `</div>`;
-      }
+          });
+          ticketHTML += `</div>`;
+        }
 
-      // Agregar exhibiciones
-      if (evaluacion.exhibiciones && evaluacion.exhibiciones.length > 0) {
-        ticketHTML += `<div style="margin-top: 3px; font-size: 8px;">`;
-        ticketHTML += `<div class="bold">Exhibiciones:</div>`;
-        evaluacion.exhibiciones.forEach((exhibicion) => {
-          const total = this.getExhibicionTotal(exhibicion);
-          ticketHTML += `
+        // Agregar exhibiciones
+        if (evaluacion.exhibiciones && evaluacion.exhibiciones.length > 0) {
+          ticketHTML += `<div style="margin-top: 3px; font-size: 8px;">`;
+          ticketHTML += `<div class="bold">Exhibiciones:</div>`;
+          evaluacion.exhibiciones.forEach((exhibicion) => {
+            const total = this.getExhibicionTotal(exhibicion);
+            ticketHTML += `
             <div class="row">
               <span>${exhibicion.type} #${exhibicion.index}:</span>
               <span>${total}/${exhibicion.maxPorExhibicion}</span>
             </div>
           `;
-        });
+          });
+          ticketHTML += `</div>`;
+        }
+
         ticketHTML += `</div>`;
-      }
+      });
 
-      ticketHTML += `</div>`;
-    });
-
-    ticketHTML += `
+      ticketHTML += `
         </div>
 
         <div class="section center">
@@ -868,11 +872,36 @@ export class EvaluacionesPage implements OnInit {
       </html>
     `;
 
-    // Abrir ventana de impresión
-    const printWindow = window.open('', '_blank', 'width=300,height=600');
-    if (printWindow) {
-      printWindow.document.write(ticketHTML);
-      printWindow.document.close();
+      // Intentar abrir ventana de impresión
+      const printWindow = window.open('', '_blank', 'width=300,height=600');
+      if (printWindow) {
+        printWindow.document.write(ticketHTML);
+        printWindow.document.close();
+      } else {
+        // Alternativa: usar iframe oculto si las ventanas emergentes están bloqueadas
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        const iframeDoc = iframe.contentWindow?.document;
+        if (iframeDoc) {
+          iframeDoc.open();
+          iframeDoc.write(ticketHTML);
+          iframeDoc.close();
+
+          setTimeout(() => {
+            iframe.contentWindow?.print();
+            setTimeout(() => {
+              document.body.removeChild(iframe);
+            }, 100);
+          }, 250);
+        }
+      }
+    } catch (error) {
+      console.error('Error al imprimir ticket:', error);
+      alert(
+        'Error al generar el ticket de impresión. Revisa la consola para más detalles.'
+      );
     }
   }
 }
