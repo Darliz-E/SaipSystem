@@ -13,6 +13,33 @@ interface Club {
   director: string;
 }
 
+interface EvaluacionMarcha {
+  id?: string;
+  pelotonId: string;
+  pelotonNombre: string;
+  instructor: string;
+  tipoMarcha: string;
+  cantidadMiembros: number;
+  evaluadorNombre: string;
+  evaluadorEmail: string;
+  coEvaluadores: string[];
+  items: Array<{
+    name: string;
+    value: number;
+    max: number;
+    comment?: string;
+  }>;
+  exhibiciones: Array<any>;
+  totalParcial: number;
+  faltasGenerales: string[];
+  faltasEstiloFancy: string[];
+  faltasEstiloMilitary: string[];
+  faltasEstiloSilent: string[];
+  faltasEstiloSoundtrack: string[];
+  descalificadoPorFaltasGenerales: boolean;
+  createdAt: string;
+}
+
 @Component({
   selector: 'app-evaluaciones-page',
   templateUrl: './evaluaciones.page.html',
@@ -28,12 +55,16 @@ export class EvaluacionesPage implements OnInit {
   clubes: Club[] = [];
   selectedClubId: string = '';
   isLoadingClubes: boolean = true;
+  evaluacionesMarcha: EvaluacionMarcha[] = [];
+  evaluacionesMarchaFiltradas: EvaluacionMarcha[] = [];
+  isLoadingMarcha: boolean = false;
 
   constructor(private firebaseService: FirebaseService) {}
 
   ngOnInit(): void {
     this.updateCantidad();
     this.loadClubes();
+    this.loadEvaluacionesMarcha();
   }
 
   async loadClubes() {
@@ -48,18 +79,55 @@ export class EvaluacionesPage implements OnInit {
     }
   }
 
+  async loadEvaluacionesMarcha() {
+    try {
+      this.isLoadingMarcha = true;
+      const evaluaciones = await this.firebaseService.getDocuments(
+        'evaluaciones_marcha'
+      );
+      this.evaluacionesMarcha = evaluaciones as EvaluacionMarcha[];
+      this.evaluacionesMarchaFiltradas = [...this.evaluacionesMarcha];
+
+      // Debug: mostrar datos de la primera evaluación
+      if (this.evaluacionesMarcha.length > 0) {
+        console.log('Primera evaluación:', this.evaluacionesMarcha[0]);
+        console.log('Tipo de marcha:', this.evaluacionesMarcha[0].tipoMarcha);
+        console.log('Fecha:', this.evaluacionesMarcha[0].createdAt);
+      }
+
+      this.updateCantidad();
+    } catch (error) {
+      console.error('Error cargando evaluaciones de marcha:', error);
+    } finally {
+      this.isLoadingMarcha = false;
+    }
+  }
+
   onClubChange(event: any) {
     this.selectedClubId = event.target.value;
-    // Aquí puedes filtrar las evaluaciones según el club seleccionado
-    console.log('Club seleccionado:', this.selectedClubId);
+    this.filtrarEvaluaciones();
+  }
+
+  filtrarEvaluaciones() {
+    if (this.tabActiva === 2) {
+      if (this.selectedClubId) {
+        this.evaluacionesMarchaFiltradas = this.evaluacionesMarcha.filter(
+          (ev) => ev.pelotonId === this.selectedClubId
+        );
+      } else {
+        this.evaluacionesMarchaFiltradas = [...this.evaluacionesMarcha];
+      }
+      this.updateCantidad();
+    }
   }
 
   updateCantidad() {
-    // Aquí puedes actualizar la cantidad según el tab activo
-    // Por ahora es estático, pero cuando conectes con Firebase será dinámico
     if (this.tabActiva === 0) {
       this.cantidadActual = 1;
       this.hasEvaluaciones = true;
+    } else if (this.tabActiva === 2) {
+      this.cantidadActual = this.evaluacionesMarchaFiltradas.length;
+      this.hasEvaluaciones = this.cantidadActual > 0;
     } else {
       this.cantidadActual = 0;
       this.hasEvaluaciones = false;
@@ -91,10 +159,201 @@ export class EvaluacionesPage implements OnInit {
       this.tituloActual = 'Disciplina';
     } else if (index === 2) {
       this.tituloActual = 'Marcha';
+      this.filtrarEvaluaciones();
     } else {
       this.tituloActual = 'Pase de Lista';
     }
     this.updateCantidad();
+  }
+
+  getTipoMarchaLabel(tipo: string): string {
+    if (!tipo) {
+      console.warn('Tipo de marcha no definido');
+      return 'No especificado';
+    }
+
+    const tipos: { [key: string]: string } = {
+      MILITARY: 'Militar',
+      FANCY: 'Fancy',
+      SILENT: 'Silenciosa',
+      SOUNDTRACK: 'Soundtrack',
+    };
+
+    const label = tipos[tipo.toUpperCase()];
+    if (!label) {
+      console.warn('Tipo de marcha desconocido:', tipo);
+      return tipo;
+    }
+
+    return label;
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+
+    try {
+      // Intentar parsear la fecha
+      let date: Date;
+
+      // Si es un timestamp de Firestore
+      if (typeof dateString === 'object' && 'seconds' in dateString) {
+        date = new Date((dateString as any).seconds * 1000);
+      } else {
+        date = new Date(dateString);
+      }
+
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        return 'Fecha inválida';
+      }
+
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return 'N/A';
+    }
+  }
+
+  getCoEvaluadoresText(coEvaluadores: string[]): string {
+    if (!coEvaluadores || coEvaluadores.length === 0) {
+      return 'Sin co-evaluadores';
+    }
+    return coEvaluadores.join(', ');
+  }
+
+  getEvaluacionesAgrupadasPorPeloton(): { [key: string]: EvaluacionMarcha[] } {
+    const agrupadas: { [key: string]: EvaluacionMarcha[] } = {};
+
+    this.evaluacionesMarchaFiltradas.forEach((evaluacion) => {
+      const key = evaluacion.pelotonId;
+      if (!agrupadas[key]) {
+        agrupadas[key] = [];
+      }
+      agrupadas[key].push(evaluacion);
+    });
+
+    return agrupadas;
+  }
+
+  getPelotonKeys(): string[] {
+    return Object.keys(this.getEvaluacionesAgrupadasPorPeloton());
+  }
+
+  hasFaltas(evaluacion: EvaluacionMarcha): boolean {
+    return (
+      (evaluacion.faltasGenerales && evaluacion.faltasGenerales.length > 0) ||
+      (evaluacion.faltasEstiloFancy &&
+        evaluacion.faltasEstiloFancy.length > 0) ||
+      (evaluacion.faltasEstiloMilitary &&
+        evaluacion.faltasEstiloMilitary.length > 0) ||
+      (evaluacion.faltasEstiloSilent &&
+        evaluacion.faltasEstiloSilent.length > 0) ||
+      (evaluacion.faltasEstiloSoundtrack &&
+        evaluacion.faltasEstiloSoundtrack.length > 0)
+    );
+  }
+
+  getExhibicionTypeLabel(type: string): string {
+    const tipos: { [key: string]: string } = {
+      // Fancy
+      FS: 'Exhibición Fancy/Soundtrack',
+      FI: 'Innovación Fancy',
+      FD: 'Grado de Dificultad Fancy',
+      FJ: 'Impacto del Juez Fancy',
+      FP: 'Precisión Fancy',
+
+      // Military
+      MS: 'Exhibición Military/Silent',
+      MI: 'Innovación Military',
+      MD: 'Grado de Dificultad Military',
+      MP: 'Precisión Military',
+
+      // Silent
+      SI: 'Innovación Silent',
+      SD: 'Grado de Dificultad Silent',
+      SP: 'Precisión Silent',
+
+      // Soundtrack
+      SO: 'Innovación Soundtrack',
+      TD: 'Grado de Dificultad Soundtrack',
+      TJ: 'Impacto del Juez Soundtrack',
+      TP: 'Precisión Soundtrack',
+      TS: 'Sincronización Soundtrack',
+    };
+    return tipos[type] || type;
+  }
+
+  getExhibicionTotal(exhibicion: any): number {
+    let total = 0;
+    const excludeKeys = [
+      'type',
+      'index',
+      'maxPorExhibicion',
+      'comment',
+      'commentPliegueRepliegue',
+      'commentDeformaciones',
+      'commentOriginalidad',
+      'commentEjecucion',
+      'commentComposicion',
+      'commentCreatividad',
+      'commentPlenas',
+      'commentCadenciasNumericas',
+      'commentIntervalos',
+      'commentContraMarcha',
+      'commentPasosDiferentesTiempos',
+      'commentGradoDificultadDeformacion',
+      'commentGradoDificultad',
+      'commentImpactoJuez',
+      'commentPrecision',
+      'commentSincronizacion',
+    ];
+
+    for (const key in exhibicion) {
+      if (!excludeKeys.includes(key) && typeof exhibicion[key] === 'number') {
+        total += exhibicion[key];
+      }
+    }
+    return total;
+  }
+
+  getExhibicionDetalles(
+    exhibicion: any
+  ): Array<{ label: string; value: number }> {
+    const detalles: Array<{ label: string; value: number }> = [];
+    const labelMap: { [key: string]: string } = {
+      pliegueRepliegue: 'Pliegue/Repliegue',
+      deformaciones: 'Deformaciones',
+      creatividad: 'Creatividad',
+      originalidad: 'Originalidad',
+      ejecucion: 'Ejecución',
+      composicion: 'Composición',
+      plenas: 'Plenas',
+      cadenciasNumericas: 'Cadencias Numéricas',
+      intervalos: 'Intervalos',
+      contraMarcha: 'Contra Marcha',
+      pasosDiferentesTiempos: 'Pasos Diferentes Tiempos',
+      gradoDificultadDeformacion: 'Grado Dificultad Deformación',
+      gradoDificultad: 'Grado de Dificultad',
+      impactoJuez: 'Impacto del Juez',
+      precision: 'Precisión',
+      sincronizacion: 'Sincronización',
+    };
+
+    for (const key in exhibicion) {
+      if (labelMap[key] && typeof exhibicion[key] === 'number') {
+        detalles.push({
+          label: labelMap[key],
+          value: exhibicion[key],
+        });
+      }
+    }
+    return detalles;
   }
 
   private loadImageDataUrl(url: string): Promise<string | null> {
@@ -244,5 +503,187 @@ export class EvaluacionesPage implements OnInit {
     } catch (error) {
       console.error('Error al generar el PDF:', error);
     }
+  }
+
+  getPromedioPeloton(pelotonId: string): string {
+    const evaluaciones = this.getEvaluacionesAgrupadasPorPeloton()[pelotonId];
+    if (!evaluaciones || evaluaciones.length === 0) return '0';
+
+    const suma = evaluaciones.reduce((acc, ev) => acc + ev.totalParcial, 0);
+    const promedio = suma / evaluaciones.length;
+    return promedio.toFixed(2);
+  }
+
+  async exportarPelotoPDF(pelotonId: string) {
+    const evaluaciones = this.getEvaluacionesAgrupadasPorPeloton()[pelotonId];
+    if (!evaluaciones || evaluaciones.length === 0) return;
+
+    const peloton = evaluaciones[0];
+    const promedio = this.getPromedioPeloton(pelotonId);
+
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    let currentY = 15;
+
+    // Título
+    pdf.setFontSize(16);
+    pdf.setTextColor(27, 38, 59);
+    pdf.text(`Evaluaciones de Marcha - ${peloton.pelotonNombre}`, 15, currentY);
+    currentY += 8;
+
+    // Información del pelotón
+    pdf.setFontSize(9);
+    pdf.setTextColor(80, 80, 88);
+    pdf.text(
+      `Instructor: ${peloton.instructor} | Miembros: ${
+        peloton.cantidadMiembros
+      } | Tipo: ${this.getTipoMarchaLabel(
+        peloton.tipoMarcha
+      )} | Promedio: ${promedio} pts`,
+      15,
+      currentY
+    );
+    currentY += 8;
+
+    // Por cada evaluador, crear una tabla con su desglose
+    evaluaciones.forEach((evaluacion, index) => {
+      // Verificar si necesitamos una nueva página
+      if (currentY > 180) {
+        pdf.addPage();
+        currentY = 15;
+      }
+
+      // Encabezado del evaluador
+      pdf.setFontSize(11);
+      pdf.setTextColor(70, 90, 117);
+      pdf.text(
+        `Evaluador: ${evaluacion.evaluadorNombre || evaluacion.evaluadorEmail}`,
+        15,
+        currentY
+      );
+      currentY += 1;
+
+      // Co-evaluadores y fecha
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      const coEval =
+        evaluacion.coEvaluadores && evaluacion.coEvaluadores.length > 0
+          ? `Co-evaluadores: ${this.getCoEvaluadoresText(
+              evaluacion.coEvaluadores
+            )}`
+          : '';
+      const fecha = `Fecha: ${this.formatDate(evaluacion.createdAt)}`;
+      pdf.text(`${coEval} ${coEval ? ' | ' : ''}${fecha}`, 15, currentY + 4);
+      currentY += 8;
+
+      // Preparar datos de criterios base
+      const criteriosData: any[] = [];
+      if (evaluacion.items && evaluacion.items.length > 0) {
+        evaluacion.items.forEach((item) => {
+          criteriosData.push([
+            item.name,
+            `${item.value} / ${item.max}`,
+            item.comment || '-',
+          ]);
+        });
+      }
+
+      // Tabla de criterios base
+      if (criteriosData.length > 0) {
+        autoTable(pdf, {
+          head: [['Criterio Base', 'Puntos', 'Comentario']],
+          body: criteriosData,
+          startY: currentY,
+          margin: { left: 15 },
+          styles: {
+            fontSize: 8,
+            cellPadding: 2,
+          },
+          headStyles: {
+            fillColor: [70, 90, 117],
+            textColor: 255,
+            fontStyle: 'bold',
+            fontSize: 8,
+          },
+          columnStyles: {
+            0: { cellWidth: 50 },
+            1: { cellWidth: 25, halign: 'center' },
+            2: { cellWidth: 'auto' },
+          },
+          theme: 'grid',
+        });
+        currentY = (pdf as any).lastAutoTable.finalY + 3;
+      }
+
+      // Preparar datos de exhibiciones
+      const exhibicionesData: any[] = [];
+      if (evaluacion.exhibiciones && evaluacion.exhibiciones.length > 0) {
+        evaluacion.exhibiciones.forEach((exhibicion) => {
+          const detalles = this.getExhibicionDetalles(exhibicion);
+          const detallesStr = detalles
+            .map((d) => `${d.label}: ${d.value}`)
+            .join(', ');
+          const total = this.getExhibicionTotal(exhibicion);
+
+          exhibicionesData.push([
+            `${this.getExhibicionTypeLabel(exhibicion.type)} #${
+              exhibicion.index
+            }`,
+            `${total} / ${exhibicion.maxPorExhibicion}`,
+            detallesStr || '-',
+            exhibicion.comment || '-',
+          ]);
+        });
+      }
+
+      // Tabla de exhibiciones
+      if (exhibicionesData.length > 0) {
+        autoTable(pdf, {
+          head: [['Exhibición', 'Puntos', 'Desglose', 'Comentario']],
+          body: exhibicionesData,
+          startY: currentY,
+          margin: { left: 15 },
+          styles: {
+            fontSize: 7,
+            cellPadding: 2,
+          },
+          headStyles: {
+            fillColor: [70, 90, 117],
+            textColor: 255,
+            fontStyle: 'bold',
+            fontSize: 8,
+          },
+          columnStyles: {
+            0: { cellWidth: 50 },
+            1: { cellWidth: 20, halign: 'center' },
+            2: { cellWidth: 70 },
+            3: { cellWidth: 'auto' },
+          },
+          theme: 'grid',
+        });
+        currentY = (pdf as any).lastAutoTable.finalY + 2;
+      }
+
+      // Total del evaluador
+      pdf.setFontSize(10);
+      pdf.setTextColor(57, 168, 85);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Total: ${evaluacion.totalParcial} puntos`, 15, currentY);
+      pdf.setFont('helvetica', 'normal');
+      currentY += 8;
+
+      // Línea separadora entre evaluadores
+      if (index < evaluaciones.length - 1) {
+        pdf.setDrawColor(200, 200, 200);
+        pdf.line(15, currentY, 282, currentY);
+        currentY += 5;
+      }
+    });
+
+    pdf.save(`evaluacion-marcha-${peloton.pelotonNombre}.pdf`);
   }
 }

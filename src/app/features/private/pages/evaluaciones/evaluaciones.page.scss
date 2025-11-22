@@ -506,3 +506,485 @@
     transform: rotate(360deg);
   }
 }
+
+// Estilos para evaluaciones de marcha
+.badge-tipo-marcha {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff !important;
+}
+
+.badge-military {
+  background-color: #1b263b !important;
+  color: #ffffff !important;
+}
+
+.badge-fancy {
+  background-color: #cc552d !important;
+  color: #ffffff !important;
+}
+
+.badge-silent {
+  background-color: #465a75 !important;
+  color: #ffffff !important;
+}
+
+.badge-soundtrack {
+  background-color: #39a855 !important;
+  color: #ffffff !important;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #505058;
+
+  i {
+    color: #465a75;
+    font-size: 16px;
+  }
+
+  .info-label {
+    font-weight: 500;
+    margin-right: 6px;
+  }
+
+  .info-value {
+    color: #1b263b;
+    font-weight: 600;
+  }
+}
+
+.fecha-info {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f5f6f8;
+  border-radius: 6px;
+
+  i {
+    color: #465a75;
+  }
+
+  small {
+    font-size: 0.85rem;
+  }
+}
+
+// Estilos para el acordeón de marcha
+.accordion {
+  .accordion-item {
+    border: 1px solid #dcdfe4;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .accordion-button {
+    background-color: #f5f6f8;
+    color: #1b263b;
+    font-size: 1rem;
+    padding: 16px 20px;
+    border: none;
+
+    &:not(.collapsed) {
+      background-color: #465a75;
+      color: #ffffff !important;
+      box-shadow: none;
+
+      .accordion-title-content {
+        color: #ffffff !important;
+
+        i,
+        strong {
+          color: #ffffff !important;
+        }
+      }
+
+      .badge {
+        background-color: #ffffff !important;
+        color: #465a75 !important;
+      }
+    }
+
+    &:focus {
+      box-shadow: none;
+      border: none;
+    }
+
+    &::after {
+      filter: brightness(0) invert(0);
+    }
+
+    &:not(.collapsed)::after {
+      filter: brightness(0) invert(1);
+    }
+  }
+
+  .accordion-title-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    i,
+    strong {
+      color: inherit;
+    }
+  }
+
+  .accordion-body {
+    padding: 20px;
+    background-color: #ffffff;
+  }
+}
+
+// Estilos para badges de tipo de marcha
+.badge-tipo-marcha {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  display: inline-block;
+  background-color: #6c757d !important; // Color por defecto gris
+  min-width: 80px;
+  text-align: center;
+}
+
+.badge-military {
+  background-color: #1b263b !important;
+}
+
+.badge-fancy {
+  background-color: #cc552d !important;
+}
+
+.badge-silent {
+  background-color: #465a75 !important;
+}
+
+.badge-soundtrack {
+  background-color: #39a855 !important;
+}
+
+// Estilos para la tabla de evaluaciones
+.table {
+  margin-bottom: 0;
+
+  thead {
+    background-color: #f5f6f8;
+
+    th {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #465a75;
+      border-bottom: 2px solid #dcdfe4;
+      padding: 12px;
+    }
+  }
+
+  tbody {
+    tr {
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f9fafb;
+      }
+
+      td {
+        padding: 12px;
+        vertical-align: middle;
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+// Detalles expandibles
+.detalle-evaluacion {
+  background-color: #f9fafb;
+  border-top: 2px solid #e5e7eb;
+}
+
+// Secciones de detalle
+.seccion-detalle {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+
+  .seccion-titulo {
+    color: #1b263b;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+}
+
+// Criterios base
+.criterio-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f2f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .criterio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+
+    .criterio-nombre {
+      font-weight: 500;
+      color: #1b263b;
+      font-size: 0.9rem;
+    }
+
+    .criterio-puntos {
+      font-size: 0.9rem;
+      color: #39a855;
+
+      strong {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .criterio-comentario {
+    margin-top: 4px;
+    padding-left: 8px;
+    border-left: 3px solid #e5e7eb;
+
+    small {
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+  }
+}
+
+// Exhibiciones detalle
+.exhibicion-item-detalle {
+  background-color: #f9fafb;
+  border-left: 3px solid #465a75;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .exhibicion-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .badge-exhibicion {
+      background-color: #465a75;
+      color: #ffffff;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .exhibicion-puntos {
+      font-size: 0.9rem;
+      color: #39a855;
+      font-weight: 500;
+
+      strong {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .exhibicion-detalles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: #ffffff;
+    border-radius: 4px;
+
+    .detalle-punto {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      background-color: #f5f6f8;
+      border-radius: 4px;
+      font-size: 0.8rem;
+
+      .detalle-label {
+        color: #505058;
+        font-weight: 500;
+      }
+
+      .detalle-valor {
+        color: #1b263b;
+        font-weight: 700;
+        background-color: #e5e7eb;
+        padding: 2px 8px;
+        border-radius: 10px;
+        min-width: 24px;
+        text-align: center;
+      }
+    }
+  }
+
+  .exhibicion-comentario {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #505058;
+    padding: 6px 8px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    margin-top: 6px;
+
+    i {
+      color: #8b9bb0;
+    }
+  }
+}
+
+// Sección de faltas
+.seccion-faltas {
+  background-color: #fff5f5;
+  border-color: #fecaca;
+
+  .seccion-titulo {
+    border-bottom-color: #fecaca;
+  }
+}
+
+.faltas-container {
+  .falta-grupo {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .falta-tipo {
+      color: #dc2626;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .falta-lista {
+      margin: 0;
+      padding-left: 20px;
+
+      li {
+        color: #505058;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+// Resumen del pelotón
+.peloton-resumen {
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+
+  .resumen-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 12px;
+    height: 100%;
+
+    .resumen-label {
+      font-size: 0.75rem;
+      color: #637a96;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .resumen-value {
+      font-size: 0.95rem;
+      color: #1b263b;
+      font-weight: 600;
+    }
+
+    .resumen-value-big {
+      font-size: 1.5rem;
+      color: #39a855;
+      font-weight: 700;
+    }
+
+    &.resumen-promedio {
+      background-color: #f0fdf4;
+      border-color: #39a855;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 767.98px) {
+  .accordion-button {
+    font-size: 0.9rem;
+    padding: 12px 16px;
+  }
+
+  .peloton-resumen {
+    padding: 12px;
+
+    .resumen-card {
+      padding: 10px;
+
+      .resumen-value {
+        font-size: 0.85rem;
+      }
+
+      .resumen-value-big {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .accordion-title-content {
+    flex-wrap: wrap;
+
+    .badge {
+      margin-top: 8px;
+      margin-left: 0 !important;
+    }
+  }
+
+  .table {
+    font-size: 0.8rem;
+
+    thead th,
+    tbody td {
+      padding: 8px 6px;
+    }
+  }
+
+  .exhibiciones-grid {
+    grid-template-columns: 1fr;
+  }
+}

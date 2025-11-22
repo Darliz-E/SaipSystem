@@ -153,7 +153,227 @@
 
 <!-- Contenido de Marcha -->
 <ng-container *ngIf="tabActiva === 2">
-  <div class="empty-state">
+  <!-- Loading state -->
+  <div class="text-center py-5" *ngIf="isLoadingMarcha">
+    <i class="bi bi-arrow-repeat spin-icon" style="font-size: 2rem; color: #465a75;"></i>
+    <p class="mt-3 text-muted">Cargando evaluaciones de marcha...</p>
+  </div>
+
+  <!-- Acordeón de evaluaciones agrupadas por pelotón -->
+  <div class="accordion" id="accordionMarcha" *ngIf="!isLoadingMarcha && hasEvaluaciones">
+    <div class="accordion-item" *ngFor="let pelotonId of getPelotonKeys(); let i = index">
+      <h2 class="accordion-header" [id]="'heading' + i">
+        <button
+          class="accordion-button"
+          [class.collapsed]="i !== 0"
+          type="button"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#collapse' + i"
+          [attr.aria-expanded]="i === 0 ? 'true' : 'false'"
+          [attr.aria-controls]="'collapse' + i"
+        >
+          <div class="accordion-title-content">
+            <i class="bi bi-flag me-2"></i>
+            <strong>{{ getEvaluacionesAgrupadasPorPeloton()[pelotonId][0].pelotonNombre }}</strong>
+            <span class="badge bg-secondary ms-3">
+              {{ getEvaluacionesAgrupadasPorPeloton()[pelotonId].length }}
+              {{ getEvaluacionesAgrupadasPorPeloton()[pelotonId].length === 1 ? 'evaluación' : 'evaluaciones' }}
+            </span>
+          </div>
+        </button>
+      </h2>
+      <div
+        [id]="'collapse' + i"
+        class="accordion-collapse collapse"
+        [class.show]="i === 0"
+        [attr.aria-labelledby]="'heading' + i"
+        data-bs-parent="#accordionMarcha"
+      >
+        <div class="accordion-body">
+          <!-- Resumen del pelotón -->
+          <div class="peloton-resumen mb-4">
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="resumen-card">
+                  <div class="resumen-label">Instructor</div>
+                  <div class="resumen-value">{{ getEvaluacionesAgrupadasPorPeloton()[pelotonId][0].instructor }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-2">
+                <div class="resumen-card">
+                  <div class="resumen-label">Miembros</div>
+                  <div class="resumen-value">{{ getEvaluacionesAgrupadasPorPeloton()[pelotonId][0].cantidadMiembros }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="resumen-card">
+                  <div class="resumen-label">Tipo de Marcha</div>
+                  <div class="resumen-value">{{ getTipoMarchaLabel(getEvaluacionesAgrupadasPorPeloton()[pelotonId][0].tipoMarcha) }}</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-2">
+                <div class="resumen-card resumen-promedio">
+                  <div class="resumen-label">Promedio</div>
+                  <div class="resumen-value-big">{{ getPromedioPeloton(pelotonId) }}</div>
+                </div>
+              </div>
+              <div class="col-12 col-md-2 d-flex align-items-end">
+                <button class="btn btn-sm btn-primary w-100" (click)="exportarPelotoPDF(pelotonId)">
+                  <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de evaluaciones del pelotón -->
+          <div class="table-responsive">
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                  <th>Evaluador</th>
+                  <th>Co-evaluadores</th>
+                  <th class="text-center">Puntuación</th>
+                  <th>Fecha</th>
+                  <th class="text-center">Detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let evaluacion of getEvaluacionesAgrupadasPorPeloton()[pelotonId]">
+                  <td>
+                    <strong>{{ evaluacion.evaluadorNombre || evaluacion.evaluadorEmail }}</strong>
+                  </td>
+                  <td>
+                    <small class="text-muted">
+                      {{ evaluacion.coEvaluadores && evaluacion.coEvaluadores.length > 0 ? getCoEvaluadoresText(evaluacion.coEvaluadores) : '-' }}
+                    </small>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge bg-success">{{ evaluacion.totalParcial }} pts</span>
+                  </td>
+                  <td>
+                    <small>{{ formatDate(evaluacion.createdAt) }}</small>
+                  </td>
+                  <td class="text-center">
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      [attr.data-bs-target]="'#detalle-' + evaluacion.id"
+                      aria-expanded="false"
+                    >
+                      <i class="bi bi-chevron-down"></i>
+                    </button>
+                  </td>
+                </tr>
+                <!-- Fila expandible con detalles -->
+                <tr *ngFor="let evaluacion of getEvaluacionesAgrupadasPorPeloton()[pelotonId]">
+                  <td colspan="7" class="p-0">
+                    <div class="collapse" [id]="'detalle-' + evaluacion.id">
+                      <div class="detalle-evaluacion p-3">
+                        <div class="row">
+                          <!-- Columna izquierda: Criterios Generales -->
+                          <div class="col-12 col-lg-5 mb-3">
+                            <div class="seccion-detalle">
+                              <h6 class="seccion-titulo">
+                                <i class="bi bi-clipboard-check me-2"></i>Criterios Base
+                              </h6>
+                              <div *ngIf="evaluacion.items && evaluacion.items.length > 0">
+                                <div class="criterio-item" *ngFor="let item of evaluacion.items">
+                                  <div class="criterio-header">
+                                    <span class="criterio-nombre">{{ item.name }}</span>
+                                    <span class="criterio-puntos">
+                                      <strong>{{ item.value }}</strong> / {{ item.max }}
+                                    </span>
+                                  </div>
+                                  <div class="criterio-comentario" *ngIf="item.comment">
+                                    <small class="text-muted">{{ item.comment }}</small>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Columna derecha: Exhibiciones -->
+                          <div class="col-12 col-lg-7 mb-3">
+                            <div class="seccion-detalle">
+                              <h6 class="seccion-titulo">
+                                <i class="bi bi-star me-2"></i>Exhibiciones ({{ evaluacion.exhibiciones?.length || 0 }})
+                              </h6>
+                              <div *ngIf="evaluacion.exhibiciones && evaluacion.exhibiciones.length > 0">
+                                <div class="exhibicion-item-detalle" *ngFor="let exhibicion of evaluacion.exhibiciones">
+                                  <div class="exhibicion-titulo">
+                                    <span class="badge badge-exhibicion">{{ getExhibicionTypeLabel(exhibicion.type) }} #{{ exhibicion.index }}</span>
+                                    <span class="exhibicion-puntos">
+                                      <strong>{{ getExhibicionTotal(exhibicion) }}</strong> / {{ exhibicion.maxPorExhibicion }} pts
+                                    </span>
+                                  </div>
+
+                                  <!-- Detalles de puntuación -->
+                                  <div class="exhibicion-detalles" *ngIf="getExhibicionDetalles(exhibicion).length > 0">
+                                    <div class="detalle-punto" *ngFor="let detalle of getExhibicionDetalles(exhibicion)">
+                                      <span class="detalle-label">{{ detalle.label }}:</span>
+                                      <span class="detalle-valor">{{ detalle.value }}</span>
+                                    </div>
+                                  </div>
+
+                                  <p class="exhibicion-comentario" *ngIf="exhibicion.comment">
+                                    <i class="bi bi-chat-left-text me-1"></i>
+                                    <em>{{ exhibicion.comment }}</em>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Faltas (ancho completo) -->
+                        <div class="row" *ngIf="hasFaltas(evaluacion)">
+                          <div class="col-12">
+                            <div class="seccion-detalle seccion-faltas">
+                              <h6 class="seccion-titulo text-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Faltas Registradas
+                              </h6>
+                              <div class="faltas-container">
+                                <div *ngIf="evaluacion.faltasGenerales && evaluacion.faltasGenerales.length > 0" class="falta-grupo">
+                                  <strong class="falta-tipo">Faltas Generales (-5 pts c/u):</strong>
+                                  <ul class="falta-lista">
+                                    <li *ngFor="let falta of evaluacion.faltasGenerales">{{ falta }}</li>
+                                  </ul>
+                                </div>
+                                <div *ngIf="evaluacion.faltasEstiloMilitary && evaluacion.faltasEstiloMilitary.length > 0" class="falta-grupo">
+                                  <strong class="falta-tipo">Faltas de Estilo (-2 pts c/u):</strong>
+                                  <ul class="falta-lista">
+                                    <li *ngFor="let falta of evaluacion.faltasEstiloMilitary">{{ falta }}</li>
+                                  </ul>
+                                </div>
+                                <div *ngIf="evaluacion.faltasEstiloFancy && evaluacion.faltasEstiloFancy.length > 0" class="falta-grupo">
+                                  <strong class="falta-tipo">Faltas de Estilo (-2 pts c/u):</strong>
+                                  <ul class="falta-lista">
+                                    <li *ngFor="let falta of evaluacion.faltasEstiloFancy">{{ falta }}</li>
+                                  </ul>
+                                </div>
+                                <div *ngIf="evaluacion.descalificadoPorFaltasGenerales" class="alert alert-danger mt-2 mb-0">
+                                  <i class="bi bi-x-circle me-2"></i>
+                                  <strong>DESCALIFICADO por faltas generales</strong>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado vacío -->
+  <div class="empty-state" *ngIf="!isLoadingMarcha && !hasEvaluaciones">
     <i class="bi bi-flag"></i>
     <h5>No hay evaluaciones de marcha</h5>
     <p>Las evaluaciones realizadas desde la app móvil aparecerán aquí</p>
