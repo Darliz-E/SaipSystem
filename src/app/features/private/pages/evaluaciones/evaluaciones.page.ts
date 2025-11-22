@@ -110,12 +110,24 @@ export class EvaluacionesPage implements OnInit {
 
   filtrarEvaluaciones() {
     if (this.tabActiva === 2) {
+      console.log('Filtrando evaluaciones...');
+      console.log('Club seleccionado:', this.selectedClubId);
+      console.log('Total evaluaciones:', this.evaluacionesMarcha.length);
+
       if (this.selectedClubId) {
         this.evaluacionesMarchaFiltradas = this.evaluacionesMarcha.filter(
           (ev) => ev.pelotonId === this.selectedClubId
         );
+        console.log(
+          'Evaluaciones filtradas:',
+          this.evaluacionesMarchaFiltradas.length
+        );
       } else {
         this.evaluacionesMarchaFiltradas = [...this.evaluacionesMarcha];
+        console.log(
+          'Mostrando todas las evaluaciones:',
+          this.evaluacionesMarchaFiltradas.length
+        );
       }
       this.updateCantidad();
     }
