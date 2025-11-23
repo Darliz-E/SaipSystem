@@ -647,17 +647,15 @@ export class EvaluacionesPage implements OnInit {
       pdf.text(`${coEval} ${coEval ? ' | ' : ''}${fecha}`, 15, currentY + 4);
       currentY += 8;
 
-      // Preparar datos de criterios base (solo los que tienen valor > 0)
+      // Preparar datos de criterios base
       const criteriosData: any[] = [];
       if (evaluacion.items && evaluacion.items.length > 0) {
         evaluacion.items.forEach((item) => {
-          if (item.value > 0) {
-            criteriosData.push([
-              item.name,
-              `${item.value} / ${item.max}`,
-              item.comment || '-',
-            ]);
-          }
+          criteriosData.push([
+            item.name,
+            `${item.value} / ${item.max}`,
+            item.comment || '-',
+          ]);
         });
       }
 
@@ -688,30 +686,24 @@ export class EvaluacionesPage implements OnInit {
         currentY = (pdf as any).lastAutoTable.finalY + 3;
       }
 
-      // Preparar datos de exhibiciones (solo las que tienen puntos > 0)
+      // Preparar datos de exhibiciones
       const exhibicionesData: any[] = [];
       if (evaluacion.exhibiciones && evaluacion.exhibiciones.length > 0) {
         evaluacion.exhibiciones.forEach((exhibicion) => {
+          const detalles = this.getExhibicionDetalles(exhibicion);
+          const detallesStr = detalles
+            .map((d) => `${d.label}: ${d.value}`)
+            .join(', ');
           const total = this.getExhibicionTotal(exhibicion);
 
-          // Solo incluir si tiene puntos
-          if (total > 0) {
-            const detalles = this.getExhibicionDetalles(exhibicion);
-            // Filtrar detalles con valor > 0
-            const detallesFiltrados = detalles.filter((d) => d.value > 0);
-            const detallesStr = detallesFiltrados
-              .map((d) => `${d.label}: ${d.value}`)
-              .join(', ');
-
-            exhibicionesData.push([
-              `${this.getExhibicionTypeLabel(exhibicion.type)} #${
-                exhibicion.index
-              }`,
-              `${total} / ${exhibicion.maxPorExhibicion}`,
-              detallesStr || '-',
-              exhibicion.comment || '-',
-            ]);
-          }
+          exhibicionesData.push([
+            `${this.getExhibicionTypeLabel(exhibicion.type)} #${
+              exhibicion.index
+            }`,
+            `${total} / ${exhibicion.maxPorExhibicion}`,
+            detallesStr || '-',
+            exhibicion.comment || '-',
+          ]);
         });
       }
 
@@ -952,7 +944,7 @@ export class EvaluacionesPage implements OnInit {
 
         <div class="section center">
           <div class="total">PROMEDIO TOTAL</div>
-          <div style="font-size: 16px; font-weight: bold;">${totalPuntos} PUNTOS</div>
+          <div style="font-size: 16px; font-weight: bold;">${promedio} PUNTOS</div>
         </div>
 
         <div class="footer">
