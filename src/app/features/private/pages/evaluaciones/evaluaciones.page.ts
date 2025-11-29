@@ -58,6 +58,13 @@ export class EvaluacionesPage implements OnInit {
   evaluacionesMarcha: EvaluacionMarcha[] = [];
   evaluacionesMarchaFiltradas: EvaluacionMarcha[] = [];
   isLoadingMarcha: boolean = false;
+  uniformidadEvaluaciones: any[] = [];
+  uniformidadEvaluacionesFiltradas: any[] = [];
+  isLoadingUniformidad: boolean = false;
+  uniformidadPorZona: Array<{
+    zona: string;
+    clubes: Array<{ clubId: string; clubNombre: string; evaluaciones: any[] }>;
+  }> = [];
   isCreandoEvento: boolean = false;
   nuevoEvento: { nombre: string; fecha: string; hora: string } = {
     nombre: '',
@@ -89,6 +96,7 @@ export class EvaluacionesPage implements OnInit {
     this.loadClubes();
     this.loadEvaluacionesMarcha();
     this.loadEventosPaseLista();
+    this.loadUniformidadEvaluaciones();
   }
 
   async loadClubes() {
@@ -130,6 +138,7 @@ export class EvaluacionesPage implements OnInit {
   onClubChange(event: any) {
     this.selectedClubId = event.target.value;
     this.filtrarEvaluaciones();
+    this.filtrarUniformidad();
   }
 
   filtrarEvaluaciones() {
@@ -157,10 +166,104 @@ export class EvaluacionesPage implements OnInit {
     }
   }
 
+  async loadUniformidadEvaluaciones() {
+    try {
+      this.isLoadingUniformidad = true;
+      const docs = await this.firebaseService.getDocuments(
+        'uniformidad_evaluaciones'
+      );
+      this.uniformidadEvaluaciones = (docs as any[]).map((d: any) => ({
+        id: d.id,
+        clubId: d.clubId || d.pelotonId || '',
+        clubNombre: d.clubNombre || d.pelotonNombre || '',
+        evaluadorNombre:
+          d.updatedBy || d.evaluadorNombre || d.evaluadorEmail || '',
+        total: d.total || d.totalParcial || d.puntuacion || 0,
+        max: d.max || 100,
+        observaciones: d.observaciones || d.comentario || '',
+        createdAt: d.updatedAt || d.createdAt,
+        items: d.items || [],
+        status: d.status || d.estado || 'Pendiente',
+      }));
+      this.filtrarUniformidad();
+      this.updateCantidad();
+    } catch (error) {
+      console.error('Error cargando evaluaciones de uniformidad:', error);
+    } finally {
+      this.isLoadingUniformidad = false;
+    }
+  }
+
+  filtrarUniformidad() {
+    if (this.selectedClubId) {
+      this.uniformidadEvaluacionesFiltradas =
+        this.uniformidadEvaluaciones.filter(
+          (ev) => ev.clubId === this.selectedClubId
+        );
+    } else {
+      this.uniformidadEvaluacionesFiltradas = [...this.uniformidadEvaluaciones];
+    }
+    this.buildUniformidadPorZona(this.uniformidadEvaluacionesFiltradas);
+  }
+
+  buildUniformidadPorZona(data: any[]) {
+    const zonasMap: {
+      [zona: string]: {
+        [clubId: string]: { clubNombre: string; evaluaciones: any[] };
+      };
+    } = {};
+    data.forEach((ev) => {
+      const club = this.clubes.find((c) => c.id === ev.clubId);
+      const zona = club?.zona || 'Sin zona';
+      if (!zonasMap[zona]) zonasMap[zona] = {};
+      if (!zonasMap[zona][ev.clubId]) {
+        zonasMap[zona][ev.clubId] = {
+          clubNombre: ev.clubNombre || club?.nombre || 'Club',
+          evaluaciones: [],
+        };
+      }
+      zonasMap[zona][ev.clubId].evaluaciones.push(ev);
+    });
+    this.uniformidadPorZona = Object.keys(zonasMap)
+      .map((z) => ({
+        zona: z,
+        clubes: Object.keys(zonasMap[z])
+          .map((clubId) => ({
+            clubId,
+            clubNombre: zonasMap[z][clubId].clubNombre,
+            evaluaciones: zonasMap[z][clubId].evaluaciones.sort((a, b) => {
+              const ta =
+                typeof a.createdAt === 'object' && a.createdAt?.seconds
+                  ? a.createdAt.seconds * 1000
+                  : new Date(a.createdAt).getTime();
+              const tb =
+                typeof b.createdAt === 'object' && b.createdAt?.seconds
+                  ? b.createdAt.seconds * 1000
+                  : new Date(b.createdAt).getTime();
+              return tb - ta;
+            }),
+          }))
+          .sort((a, b) => a.clubNombre.localeCompare(b.clubNombre)),
+      }))
+      .sort((a, b) => {
+        const ai = this.getZonaIndex(a.zona);
+        const bi = this.getZonaIndex(b.zona);
+        if (ai !== bi) return ai - bi;
+        return a.zona.localeCompare(b.zona);
+      });
+  }
+
+  getZonaIndex(z: string): number {
+    const m = /^\s*Zona\s*(\d+)/i.exec(z || '');
+    if (m) return parseInt(m[1], 10);
+    if ((z || '').toLowerCase() === 'sin zona') return 9999;
+    return 5000;
+  }
+
   updateCantidad() {
     if (this.tabActiva === 0) {
-      this.cantidadActual = 1;
-      this.hasEvaluaciones = true;
+      this.cantidadActual = this.uniformidadEvaluacionesFiltradas.length;
+      this.hasEvaluaciones = this.cantidadActual > 0;
     } else if (this.tabActiva === 2) {
       this.cantidadActual = this.evaluacionesMarchaFiltradas.length;
       this.hasEvaluaciones = this.cantidadActual > 0;
@@ -326,6 +429,15 @@ export class EvaluacionesPage implements OnInit {
       TS: 'Sincronización Soundtrack',
     };
     return tipos[type] || type;
+  }
+
+  getTotalDeducciones(items: any[]): number {
+    return (items || []).reduce(
+      (acc, it) =>
+        acc +
+        (typeof it.deduc === 'string' ? parseFloat(it.deduc) : it.deduc || 0),
+      0
+    );
   }
 
   getExhibicionTotal(exhibicion: any): number {

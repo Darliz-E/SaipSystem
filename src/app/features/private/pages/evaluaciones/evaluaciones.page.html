@@ -90,52 +90,124 @@
 
 <!-- Contenido de Uniformidad -->
 <ng-container *ngIf="tabActiva === 0">
-  <div class="row g-4" *ngIf="hasEvaluaciones">
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="card evaluation-card" #cardToPdf>
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <h5 class="card-title mb-0">Evaluación de Uniformidad</h5>
-            <span class="badge badge-score">95%</span>
-          </div>
+  <div class="text-center py-5" *ngIf="isLoadingUniformidad">
+    <i class="bi bi-arrow-repeat spin-icon" style="font-size: 2rem; color: #465a75;"></i>
+    <p class="mt-3 text-muted">Cargando evaluaciones de uniformidad...</p>
+  </div>
 
-          <div class="evaluator-info mb-3">
-            <small class="text-muted">
-              Evaluador: <strong>Juan Pérez</strong>
-            </small>
+  <div class="accordion" id="accordionUniformidad" *ngIf="!isLoadingUniformidad && uniformidadPorZona.length > 0">
+    <div class="accordion-item" *ngFor="let z of uniformidadPorZona; let zi = index">
+      <h2 class="accordion-header" [id]="'headingUniZona' + zi">
+        <button
+          class="accordion-button"
+          [class.collapsed]="zi !== 0"
+          type="button"
+          data-bs-toggle="collapse"
+          [attr.data-bs-target]="'#collapseUniZona' + zi"
+          [attr.aria-expanded]="zi === 0 ? 'true' : 'false'"
+          [attr.aria-controls]="'collapseUniZona' + zi"
+        >
+          <div class="accordion-title-content">
+            <i class="bi bi-geo-alt me-2"></i>
+            <strong>Zona {{ z.zona }}</strong>
+            <span class="badge bg-secondary ms-3">{{ z.clubes.length }} {{ z.clubes.length === 1 ? 'club' : 'clubes' }}</span>
           </div>
-
-          <div class="puntuacion mb-3">
-            <span class="puntuacion-label">Puntuación:</span>
-            <span class="puntuacion-value">92/100</span>
-          </div>
-
-          <div class="observaciones-section">
-            <div class="observaciones-header">
-              <i class="bi bi-file-earmark-text me-2"></i>
-              <span>Observaciones</span>
-            </div>
-            <p class="observaciones-text">
-              Excelente presentación general, solo faltaron algunos detalles menores en insignias.
-            </p>
-          </div>
-
-          <div class="card-actions">
-            <button
-              class="btn btn-view"
-              data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop"
-            >
-              <i class="bi bi-eye me-2"></i>Ver Detalles
-            </button>
+        </button>
+      </h2>
+      <div
+        [id]="'collapseUniZona' + zi"
+        class="accordion-collapse collapse"
+        [class.show]="zi === 0"
+        [attr.aria-labelledby]="'headingUniZona' + zi"
+        data-bs-parent="#accordionUniformidad"
+      >
+        <div class="accordion-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-sm">
+              <thead>
+                <tr>
+                  <th>Club</th>
+                  <th>Evaluador</th>
+                  <th class="text-center">Puntos</th>
+                  <th class="text-center">Estado</th>
+                  <th>Fecha</th>
+                  <th class="text-center">Detalles</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let c of z.clubes">
+                  <tr *ngFor="let ev of c.evaluaciones">
+                    <td><strong>{{ c.clubNombre }}</strong></td>
+                    <td><small>{{ ev.evaluadorNombre }}</small></td>
+                    <td class="text-center"><span class="badge bg-success">{{ ev.total }}</span></td>
+                    <td class="text-center">
+                      <span class="badge" [ngClass]="{
+                        'bg-success': ev.status?.toLowerCase() === 'completado',
+                        'bg-warning': ev.status?.toLowerCase() === 'pendiente',
+                        'bg-secondary': ev.status?.toLowerCase() !== 'completado' && ev.status?.toLowerCase() !== 'pendiente'
+                      }">{{ ev.status || 'Pendiente' }}</span>
+                    </td>
+                    <td><small>{{ formatDate(ev.createdAt) }}</small></td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#uni-detalle-' + ev.id" aria-expanded="false">
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngFor="let ev of c.evaluaciones">
+                    <td colspan="5" class="p-0">
+                      <div class="collapse" [id]="'uni-detalle-' + ev.id">
+                        <div class="p-3 bg-white border-top">
+                          <h6 class="mb-2 fw-semibold" style="color:#1b263b"><i class="bi bi-list-check me-2"></i>Desglose de evaluación</h6>
+                          <div *ngIf="ev.items?.length; else noItems">
+                            <div class="row g-2">
+                              <div class="col-12">
+                                <div class="table-responsive">
+                                  <table class="table table-sm">
+                                    <thead>
+                                      <tr>
+                                        <th>Criterio</th>
+                                        <th class="text-center">Deducción</th>
+                                        <th>Comentario</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr *ngFor="let it of ev.items">
+                                        <td>{{ it.name || it.label || it.id }}</td>
+                                        <td class="text-center">
+                                          <span class="badge" [ngClass]="(it.deduc || 0) > 0 ? 'bg-danger' : 'bg-success'">
+                                            {{ (it.deduc || 0) > 0 ? ('-' + (it.deduc || 0)) : '0' }}
+                                          </span>
+                                        </td>
+                                        <td>
+                                          <small class="text-muted">{{ it.comentario || it.comment }}</small>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <div class="mt-2 text-end">
+                                  <small class="text-muted">Total deducciones:</small>
+                                  <span class="badge bg-danger">-{{ getTotalDeducciones(ev.items) }}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <ng-template #noItems><small class="text-muted">Sin desglose disponible</small></ng-template>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Estado vacío -->
-  <div class="empty-state" *ngIf="!hasEvaluaciones">
+  <div class="empty-state" *ngIf="!isLoadingUniformidad && uniformidadPorZona.length === 0">
     <i class="bi bi-clipboard-x"></i>
     <h5>No hay evaluaciones de uniformidad</h5>
     <p>Las evaluaciones realizadas desde la app móvil aparecerán aquí</p>
