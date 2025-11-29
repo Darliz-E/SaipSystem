@@ -385,10 +385,135 @@
 
 <!-- Contenido de Pase de Lista -->
 <ng-container *ngIf="tabActiva === 3">
-  <div class="empty-state">
-    <i class="bi bi-list-check"></i>
-    <h5>No hay pases de lista</h5>
-    <p>Los pases de lista realizados desde la app móvil aparecerán aquí</p>
+  <div class="row g-3 align-items-end">
+    <div class="col-12 col-md-8">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-primary" type="button" (click)="openEventoModalCreate()">
+          <i class="bi bi-plus-lg me-2"></i>Nuevo evento
+        </button>
+        <small class="text-muted" *ngIf="eventosPaseLista.length === 0">Crea tu primer evento para pase de lista</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-3" *ngIf="eventosPaseLista.length > 0; else emptyPaseLista">
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr>
+          <th>Evento</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th class="text-center">Presentes</th>
+          <th class="text-center">Ausentes</th>
+          <th class="text-center">Detalles</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let ev of eventosPaseLista">
+          <tr>
+            <td><strong>{{ ev.nombre }}</strong></td>
+            <td><small>{{ ev.fecha }}</small></td>
+            <td><small>{{ ev.hora }}</small></td>
+            <td class="text-center"><span class="badge bg-success">{{ ev.presentes }}</span></td>
+            <td class="text-center"><span class="badge bg-secondary">{{ ev.ausentes }}</span></td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#evento-detalle-' + ev.id" aria-expanded="false">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-secondary me-1" type="button" (click)="openEventoModalEdit(ev)">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6" class="p-0">
+              <div class="collapse" [id]="'evento-detalle-' + ev.id">
+                <div class="p-3 bg-white border-top">
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <h6 class="mb-2 fw-semibold" style="color:#1b263b"><i class="bi bi-people me-2"></i>Clubes presentes ({{ ev.presentes }})</h6>
+                      <div *ngIf="ev.zonas?.length; else presentesPlano">
+                        <div class="mb-2" *ngFor="let z of ev.zonas">
+                          <strong>Zona {{ z.zona }}</strong>
+                          <ul class="mb-1" *ngIf="z.presentes?.length; else zNoPresentes">
+                            <li *ngFor="let c of z.presentes">{{ c }}</li>
+                          </ul>
+                          <ng-template #zNoPresentes><small class="text-muted">Sin registros</small></ng-template>
+                        </div>
+                      </div>
+                      <ng-template #presentesPlano>
+                        <ul class="mb-0" *ngIf="ev.clubesPresentes?.length; else noPresentes">
+                          <li *ngFor="let c of ev.clubesPresentes">{{ c }}</li>
+                        </ul>
+                        <ng-template #noPresentes><small class="text-muted">Sin registros</small></ng-template>
+                      </ng-template>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <h6 class="mb-2 fw-semibold" style="color:#1b263b"><i class="bi bi-person-x me-2"></i>Ausentes ({{ ev.ausentes }})</h6>
+                      <div *ngIf="ev.zonas?.length; else ausentesPlano">
+                        <div class="mb-2" *ngFor="let z of ev.zonas">
+                          <strong>Zona {{ z.zona }}</strong>
+                          <ul class="mb-1" *ngIf="z.ausentes?.length; else zNoAusentes">
+                            <li *ngFor="let c of z.ausentes">{{ c }}</li>
+                          </ul>
+                          <ng-template #zNoAusentes><small class="text-muted">Sin registros</small></ng-template>
+                        </div>
+                      </div>
+                      <ng-template #ausentesPlano>
+                        <ul class="mb-0" *ngIf="ev.clubesAusentes?.length; else noAusentes">
+                          <li *ngFor="let c of ev.clubesAusentes">{{ c }}</li>
+                        </ul>
+                        <ng-template #noAusentes><small class="text-muted">Sin registros</small></ng-template>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #emptyPaseLista>
+    <div class="empty-state">
+      <i class="bi bi-list-check"></i>
+      <h5>No hay pases de lista</h5>
+      <p>Los eventos que crees aparecerán aquí</p>
+    </div>
+  </ng-template>
+  <div class="modal fade" id="modalEventoPaseLista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editEventoId ? 'Editar evento' : 'Nuevo evento' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label class="filter-label">Nombre del evento</label>
+            <input class="form-control form-select-custom" [(ngModel)]="formEvento.nombre" placeholder="Ej. Reunión general" />
+          </div>
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="filter-label">Fecha</label>
+              <input class="form-control form-select-custom" type="date" [(ngModel)]="formEvento.fecha" />
+            </div>
+            <div class="col-6">
+              <label class="filter-label">Hora</label>
+              <input class="form-control form-select-custom" type="time" [(ngModel)]="formEvento.hora" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveEvento()" [disabled]="!formEvento.nombre || !formEvento.fecha || !formEvento.hora">Guardar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </ng-container>
 

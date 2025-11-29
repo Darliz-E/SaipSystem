@@ -58,6 +58,29 @@ export class EvaluacionesPage implements OnInit {
   evaluacionesMarcha: EvaluacionMarcha[] = [];
   evaluacionesMarchaFiltradas: EvaluacionMarcha[] = [];
   isLoadingMarcha: boolean = false;
+  isCreandoEvento: boolean = false;
+  nuevoEvento: { nombre: string; fecha: string; hora: string } = {
+    nombre: '',
+    fecha: '',
+    hora: '',
+  };
+  eventosPaseLista: Array<{
+    id: string;
+    nombre: string;
+    fecha: string;
+    hora: string;
+    presentes: number;
+    ausentes: number;
+    clubesPresentes?: string[];
+    clubesAusentes?: string[];
+    zonas?: Array<{ zona: string; presentes: string[]; ausentes: string[] }>;
+  }> = [];
+  formEvento: { nombre: string; fecha: string; hora: string } = {
+    nombre: '',
+    fecha: '',
+    hora: '',
+  };
+  editEventoId: string | null = null;
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -65,6 +88,7 @@ export class EvaluacionesPage implements OnInit {
     this.updateCantidad();
     this.loadClubes();
     this.loadEvaluacionesMarcha();
+    this.loadEventosPaseLista();
   }
 
   async loadClubes() {
@@ -139,6 +163,9 @@ export class EvaluacionesPage implements OnInit {
       this.hasEvaluaciones = true;
     } else if (this.tabActiva === 2) {
       this.cantidadActual = this.evaluacionesMarchaFiltradas.length;
+      this.hasEvaluaciones = this.cantidadActual > 0;
+    } else if (this.tabActiva === 3) {
+      this.cantidadActual = this.eventosPaseLista.length;
       this.hasEvaluaciones = this.cantidadActual > 0;
     } else {
       this.cantidadActual = 0;
@@ -1002,6 +1029,128 @@ export class EvaluacionesPage implements OnInit {
       alert(
         'Error al generar el ticket de impresión. Revisa la consola para más detalles.'
       );
+    }
+  }
+  openEventoModalCreate() {
+    this.editEventoId = null;
+    this.formEvento = { nombre: '', fecha: '', hora: '' };
+    $('#modalEventoPaseLista').modal('show');
+  }
+
+  openEventoModalEdit(ev: any) {
+    this.editEventoId = ev.id;
+    this.formEvento = { nombre: ev.nombre, fecha: ev.fecha, hora: ev.hora };
+    $('#modalEventoPaseLista').modal('show');
+  }
+
+  async saveEvento() {
+    const { nombre, fecha, hora } = this.formEvento;
+    if (!nombre || !fecha || !hora) return;
+    if (this.editEventoId) {
+      const updateData = { nombre, fecha, hora, updatedAt: new Date() };
+      this.firebaseService
+        .updateDocument('pase_lista_eventos', this.editEventoId, updateData)
+        .then(() => {
+          this.eventosPaseLista = this.eventosPaseLista.map((e) =>
+            e.id === this.editEventoId ? { ...e, ...updateData } : e
+          );
+        })
+        .catch((err) => console.error('Error actualizando evento:', err));
+    } else {
+      let presentesNombres = (this.clubes || []).map((c) => c.nombre);
+      if (!presentesNombres.length) {
+        try {
+          const clubes = (await this.firebaseService.getDocuments(
+            'clubes'
+          )) as Club[];
+          this.clubes = clubes;
+          presentesNombres = clubes.map((c) => c.nombre);
+        } catch (e) {
+          console.error('No se pudieron cargar clubes para el evento:', e);
+        }
+      }
+
+      const zonasMap: {
+        [zona: string]: { presentes: string[]; ausentes: string[] };
+      } = {};
+      (this.clubes || []).forEach((club) => {
+        const zona = (club as any).zona || 'Sin zona';
+        if (!zonasMap[zona]) zonasMap[zona] = { presentes: [], ausentes: [] };
+        zonasMap[zona].presentes.push(club.nombre);
+      });
+
+      const zonasArray = Object.keys(zonasMap).map((z) => ({
+        zona: z,
+        presentes: zonasMap[z].presentes,
+        ausentes: zonasMap[z].ausentes,
+      }));
+
+      const ev = {
+        nombre,
+        fecha,
+        hora,
+        presentes: presentesNombres.length,
+        ausentes: 0,
+        clubesPresentes: presentesNombres,
+        clubesAusentes: [],
+        zonas: zonasArray,
+        createdAt: new Date(),
+      } as any;
+      await this.firebaseService
+        .addDocument('pase_lista_eventos', ev)
+        .catch((err) => console.error('Error creando evento:', err));
+      await this.loadEventosPaseLista();
+    }
+    this.editEventoId = null;
+    this.formEvento = { nombre: '', fecha: '', hora: '' };
+    $('#modalEventoPaseLista').modal('hide');
+    if (this.tabActiva === 3) this.updateCantidad();
+  }
+
+  async loadEventosPaseLista() {
+    try {
+      const eventos = await this.firebaseService.getDocuments(
+        'pase_lista_eventos'
+      );
+      this.eventosPaseLista = (eventos as any[])
+        .map((e: any) => {
+          const zonas: Array<{
+            zona: string;
+            presentes: string[];
+            ausentes: string[];
+          }> = e.zonas || [];
+          const presentesSum = zonas.length
+            ? zonas.reduce((acc, z) => acc + (z.presentes?.length || 0), 0)
+            : e.presentes || e.clubesPresentes?.length || 0;
+          const ausentesSum = zonas.length
+            ? zonas.reduce((acc, z) => acc + (z.ausentes?.length || 0), 0)
+            : e.ausentes || e.clubesAusentes?.length || 0;
+          return {
+            id: e.id,
+            nombre: e.nombre,
+            fecha: e.fecha,
+            hora: e.hora,
+            presentes: presentesSum,
+            ausentes: ausentesSum,
+            clubesPresentes: e.clubesPresentes || [],
+            clubesAusentes: e.clubesAusentes || [],
+            zonas,
+            createdAt: e.createdAt,
+          };
+        })
+        .sort((a: any, b: any) => {
+          const getTime = (x: any) => {
+            if (x.createdAt?.seconds) return x.createdAt.seconds * 1000;
+            if (x.createdAt) return new Date(x.createdAt).getTime();
+            if (x.fecha && x.hora)
+              return new Date(`${x.fecha}T${x.hora}:00`).getTime();
+            return 0;
+          };
+          return getTime(b) - getTime(a);
+        });
+      if (this.tabActiva === 3) this.updateCantidad();
+    } catch (error) {
+      console.error('Error cargando eventos de pase de lista:', error);
     }
   }
 }
