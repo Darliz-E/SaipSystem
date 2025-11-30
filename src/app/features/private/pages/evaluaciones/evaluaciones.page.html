@@ -81,7 +81,7 @@
   </div>
 
   <div class="col-12 col-md-6 text-md-end">
-    <button class="btn btn-export" (click)="generatePdf()" [disabled]="cantidadActual === 0">
+    <button class="btn btn-export" (click)="generateUniformidadReport()" [disabled]="cantidadActual === 0">
       <i class="bi bi-file-earmark-pdf"></i>
       <span>Exportar PDF</span>
     </button>
@@ -483,23 +483,26 @@
       </thead>
       <tbody>
         <ng-container *ngFor="let ev of eventosPaseLista">
-          <tr>
-            <td><strong>{{ ev.nombre }}</strong></td>
-            <td><small>{{ ev.fecha }}</small></td>
-            <td><small>{{ ev.hora }}</small></td>
-            <td class="text-center"><span class="badge bg-success">{{ ev.presentes }}</span></td>
-            <td class="text-center"><span class="badge bg-secondary">{{ ev.ausentes }}</span></td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#evento-detalle-' + ev.id" aria-expanded="false">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </td>
-            <td class="text-center">
-              <button class="btn btn-sm btn-outline-secondary me-1" type="button" (click)="openEventoModalEdit(ev)">
-                <i class="bi bi-pencil"></i>
-              </button>
-            </td>
-          </tr>
+        <tr>
+          <td><strong>{{ ev.nombre }}</strong></td>
+          <td><small>{{ ev.fecha }}</small></td>
+          <td><small>{{ ev.hora }}</small></td>
+          <td class="text-center"><span class="badge bg-success">{{ ev.presentes }}</span></td>
+          <td class="text-center"><span class="badge bg-secondary">{{ ev.ausentes }}</span></td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#evento-detalle-' + ev.id" aria-expanded="false">
+              <i class="bi bi-chevron-down"></i>
+            </button>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-secondary me-1" type="button" (click)="openEventoModalEdit(ev)">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-primary" type="button" (click)="exportarPaseListaPDF(ev)">
+              <i class="bi bi-file-earmark-pdf"></i>
+            </button>
+          </td>
+        </tr>
           <tr>
             <td colspan="6" class="p-0">
               <div class="collapse" [id]="'evento-detalle-' + ev.id">

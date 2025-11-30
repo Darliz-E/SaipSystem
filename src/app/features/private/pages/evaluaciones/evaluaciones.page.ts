@@ -656,6 +656,100 @@ export class EvaluacionesPage implements OnInit {
     }
   }
 
+  async generateUniformidadReport(zona?: string) {
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      const fecha = new Date();
+      const fechaStr = `${fecha.getDate().toString().padStart(2, '0')}/${(
+        fecha.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, '0')}/${fecha.getFullYear()}`;
+      const logoData = await this.loadImageDataUrl('assets/logo.png');
+      let startY = 20;
+      if (logoData) {
+        pdf.addImage(logoData, 'PNG', 10, 10, 22, 22);
+        pdf.setFontSize(20);
+        pdf.text('Reporte de Uniformidad', 40, 18);
+        pdf.setFontSize(11);
+        pdf.text(`Generado el: ${fechaStr}`, 40, 25);
+        startY = 35;
+      } else {
+        pdf.setFontSize(20);
+        pdf.text('Reporte de Uniformidad', 10, 20);
+        pdf.setFontSize(11);
+        pdf.text(`Generado el: ${fechaStr}`, 10, 28);
+        startY = 35;
+      }
+
+      const zonas = zona
+        ? this.uniformidadPorZona.filter((z) => z.zona === zona)
+        : this.uniformidadPorZona;
+
+      for (const z of zonas) {
+        pdf.setFontSize(14);
+        pdf.text(`Zona ${z.zona}`, 10, startY);
+        startY += 6;
+
+        const head = [
+          ['Club', 'Evaluador', 'Hora', 'Total Restado', 'Total Puntos'],
+        ];
+        const body: any[] = [];
+        z.clubes.forEach((c) => {
+          c.evaluaciones.forEach((ev) => {
+            const totalRestado = this.getTotalDeducciones(ev.items || []);
+            body.push([
+              c.clubNombre,
+              ev.evaluadorNombre || '-',
+              this.formatDate(ev.createdAt),
+              totalRestado > 0 ? `-${totalRestado}` : '0',
+              String(ev.total ?? 0),
+            ]);
+          });
+        });
+
+        autoTable(pdf, {
+          head,
+          body,
+          startY,
+          styles: {
+            fontSize: 10,
+            cellPadding: 2,
+            overflow: 'linebreak',
+            lineColor: [220, 220, 220],
+            lineWidth: 0.2,
+          },
+          headStyles: {
+            fillColor: [27, 38, 59],
+            textColor: 255,
+            fontStyle: 'bold',
+            halign: 'left',
+          },
+          alternateRowStyles: { fillColor: [245, 245, 245] },
+          theme: 'grid',
+        });
+
+        startY = (pdf as any).lastAutoTable?.finalY + 10;
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        if (startY > pageHeight - 20) {
+          pdf.addPage();
+          startY = 20;
+        }
+      }
+
+      const fileName = zona
+        ? `uniformidad_${zona}.pdf`
+        : 'uniformidad_reporte.pdf';
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('Error generando reporte de uniformidad:', error);
+    }
+  }
+
   getTotalPeloton(pelotonId: string): number {
     const evaluaciones = this.getEvaluacionesAgrupadasPorPeloton()[pelotonId];
     if (!evaluaciones || evaluaciones.length === 0) return 0;
@@ -1263,6 +1357,115 @@ export class EvaluacionesPage implements OnInit {
       if (this.tabActiva === 3) this.updateCantidad();
     } catch (error) {
       console.error('Error cargando eventos de pase de lista:', error);
+    }
+  }
+
+  async exportarPaseListaPDF(ev: any) {
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+      const fecha = new Date();
+      const fechaStr = `${fecha.getDate().toString().padStart(2, '0')}/${(
+        fecha.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, '0')}/${fecha.getFullYear()}`;
+      const logoData = await this.loadImageDataUrl('assets/logo.png');
+      let startY = 20;
+      if (logoData) {
+        pdf.addImage(logoData, 'PNG', 10, 10, 22, 22);
+        pdf.setFontSize(20);
+        pdf.text('Pase de Lista', 40, 18);
+        pdf.setFontSize(11);
+        pdf.text(`Generado el: ${fechaStr}`, 40, 25);
+        startY = 35;
+      } else {
+        pdf.setFontSize(20);
+        pdf.text('Pase de Lista', 10, 20);
+        pdf.setFontSize(11);
+        pdf.text(`Generado el: ${fechaStr}`, 10, 28);
+        startY = 35;
+      }
+
+      pdf.setFontSize(12);
+      pdf.text(`Evento: ${ev.nombre}`, 10, startY);
+      pdf.text(`Fecha: ${ev.fecha}  Hora: ${ev.hora}`, 10, startY + 6);
+      pdf.text(
+        `Presentes: ${ev.presentes}  Ausentes: ${ev.ausentes}`,
+        10,
+        startY + 12
+      );
+      startY += 18;
+
+      const getZonaForClub = (clubNombre: string): string => {
+        const club = (this.clubes || []).find(
+          (c: any) => c.nombre === clubNombre
+        );
+        return (club as any)?.zona || 'Sin zona';
+      };
+
+      const presentesRows: any[] = [];
+      const ausentesRows: any[] = [];
+      if (ev.zonas && ev.zonas.length) {
+        ev.zonas.forEach((z: any) => {
+          (z.presentes || []).forEach((c: string) =>
+            presentesRows.push([z.zona, c])
+          );
+          (z.ausentes || []).forEach((c: string) =>
+            ausentesRows.push([z.zona, c])
+          );
+        });
+      } else {
+        (ev.clubesPresentes || []).forEach((c: string) =>
+          presentesRows.push([getZonaForClub(c), c])
+        );
+        (ev.clubesAusentes || []).forEach((c: string) =>
+          ausentesRows.push([getZonaForClub(c), c])
+        );
+      }
+
+      if (presentesRows.length) {
+        autoTable(pdf, {
+          head: [['Zona', 'Club']],
+          body: presentesRows,
+          startY,
+          styles: { fontSize: 10, cellPadding: 2 },
+          headStyles: {
+            fillColor: [57, 168, 85],
+            textColor: 255,
+            fontStyle: 'bold',
+          },
+          theme: 'grid',
+        });
+        startY = (pdf as any).lastAutoTable?.finalY + 8;
+      }
+
+      if (ausentesRows.length) {
+        pdf.setFontSize(12);
+        pdf.setTextColor(204, 85, 45);
+        pdf.text('Ausentes', 10, startY);
+        startY += 4;
+        autoTable(pdf, {
+          head: [['Zona', 'Club']],
+          body: ausentesRows,
+          startY,
+          styles: { fontSize: 10, cellPadding: 2 },
+          headStyles: {
+            fillColor: [204, 85, 45],
+            textColor: 255,
+            fontStyle: 'bold',
+          },
+          theme: 'grid',
+        });
+        startY = (pdf as any).lastAutoTable?.finalY + 8;
+      }
+
+      pdf.save(`pase-lista-${ev.nombre}.pdf`);
+    } catch (error) {
+      console.error('Error generando PDF de pase de lista:', error);
     }
   }
 }
